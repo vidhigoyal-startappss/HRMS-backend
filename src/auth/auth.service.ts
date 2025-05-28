@@ -1,92 +1,62 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { SignupDto } from './dto/signup.dto';
+import { LoginDto } from './dto/login.dto';
+import * as bcrypt from 'bcryptjs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-
-import { User, UserDocument } from './schemas/user.schema';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { BasicDetailsDto } from './dto/basic-details.dto';
-import { EducationDetailsDto } from './dto/education-details.dto';
-import { BankDetailsDto } from './dto/bank-details.dto';
-import { PERMISSIONS } from './constants/permissions.constant';
+import { User, UserDocument } from '../users/user.schema'; // adjust paths accordingly
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto) {
-    const existingUser = await this.userModel.findOne({ email: registerDto.email });
+  async signup(signupDto: SignupDto) {
+    const { email, password, role } = signupDto;
+
+    // Check if user already exists
+    const existingUser = await this.userModel.findOne({ email }).exec();
     if (existingUser) {
-      throw new UnauthorizedException('User already exists with this email');
+      throw new ConflictException('User with this email already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
-    const role = registerDto.role || 'Employee';
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Assign resource-based permissions
-    const customPermissions = PERMISSIONS[role] || {};
-
-    const createdUser = new this.userModel({
-      ...registerDto,
+    // Create and save user
+    const newUser = new this.userModel({
+      email,
       password: hashedPassword,
       role,
-      customPermissions,
     });
-    return createdUser.save();
-  }
 
-  async saveBasicDetails(userId: string, details: BasicDetailsDto) {
-    const user = await this.userModel.findByIdAndUpdate(userId, details, { new: true });
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
-    return user;
-  }
+    await newUser.save();
 
-  async saveEducationAndBankDetails(
-    userId: string,
-    education: EducationDetailsDto,
-    bank: BankDetailsDto,
-  ) {
-    const user = await this.userModel.findByIdAndUpdate(
-      userId,
-      { ...education, ...bank },
-      { new: true },
-    );
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
-    return user;
-  }
-
-  async validateUser(email: string, pass: string): Promise<UserDocument | null> {
-    const user = await this.userModel.findOne({ email });
-    if (user && (await bcrypt.compare(pass, user.password))) {
-      return user;
-    }
-    return null;
+    return { message: 'User registered successfully' };
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
+    const { email, password } = loginDto;
+
+    // Find user by email
+    const user = await this.userModel.findOne({ email }).exec();
+
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = {
-      userId: user._id,
-      email: user.email,
-      role: user.role,
-      customPermissions: user.customPermissions,
-    };
+    // Compare password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
 
+    // TODO: Generate JWT token here and return it
+    // For now just returning user email and role
     return {
-      accessToken: this.jwtService.sign(payload),
+      message: 'Login successful',
+      user: { email: user.email, role: user.role },
     };
   }
 }
