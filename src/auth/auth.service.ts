@@ -1,62 +1,38 @@
-import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
-import { SignupDto } from './dto/signup.dto';
-import { LoginDto } from './dto/login.dto';
-import * as bcrypt from 'bcryptjs';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../users/user.schema'; // adjust paths accordingly
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcryptjs';
+import { User, UserDocument } from './user.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private jwtService: JwtService
   ) {}
 
-  async signup(signupDto: SignupDto) {
-    const { email, password, role } = signupDto;
-
-    // Check if user already exists
-    const existingUser = await this.userModel.findOne({ email }).exec();
-    if (existingUser) {
-      throw new ConflictException('User with this email already exists');
+  async signup(email: string, password: string) {
+    const users = await this.userModel.find();
+    if (users.length > 0) {
+      throw new BadRequestException('Signup disabled. SuperAdmin already exists.');
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
+    const user = new this.userModel({ email, password: hashedPassword });
+    await user.save();
 
-    // Create and save user
-    const newUser = new this.userModel({
-      email,
-      password: hashedPassword,
-      role,
-    });
-
-    await newUser.save();
-
-    return { message: 'User registered successfully' };
+    return { message: 'SuperAdmin created successfully' };
   }
 
-  async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
+  async login(email: string, password: string) {
+    const user = await this.userModel.findOne({ email });
+    if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    // Find user by email
-    const user = await this.userModel.findOne({ email }).exec();
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    // Compare password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    // TODO: Generate JWT token here and return it
-    // For now just returning user email and role
-    return {
-      message: 'Login successful',
-      user: { email: user.email, role: user.role },
-    };
+    const token = this.jwtService.sign({ sub: user._id, email: user.email });
+    return { message: 'Login successful', token };
   }
 }

@@ -1,0 +1,75 @@
+{
+  "email": "john.doe@example.com",
+  "password": "secret123",
+  "role": "user",
+  "accountCreationDetails": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "phone": "+919876543210",
+    "dob": "1990-05-20",
+    "gender": "male",
+    "address": "123 Main Street",
+    "city": "Indore",
+    "state": "Madhya Pradesh",
+    "zipCode": "452001",
+    "country": "India",
+    "joiningDate": "2023-01-15",
+    "designation": "Software Engineer",
+    "department": "IT",
+    "employmentType": "Full-time"
+  },
+  "educationDetails": {
+    "qualification": "Bachelor of Technology",
+    "institution": "Acropolis Institute of Technology",
+    "yearOfPassing": 2012,
+    "grade": "A"
+  },
+  "bankDetails": {
+    "bankName": "State Bank of India",
+    "accountNumber": "123456789012",
+    "ifscCode": "SBIN0001234",
+    "branchName": "Indore Main Branch",
+    "accountHolderName": "John Doe",
+    "aadharNumber": "123412341234",
+    "panNumber": "ABCDE1234F"
+  }
+}
+
+
+json format ->
+const fakeUserData: CreateUserDto = {
+  email: "john.doe@example.com",
+  password: "secret123",
+  role: "user",
+  accountCreationDetails: {
+    firstName: "John",
+    lastName: "Doe",
+    phone: "+919876543210",
+    dob: "1990-05-20",
+    gender: "male",
+    address: "123 Main Street",
+    city: "Indore",
+    state: "Madhya Pradesh",
+    zipCode: "452001",
+    country: "India",
+    joiningDate: "2023-01-15",
+    designation: "Software Engineer",
+    department: "IT",
+    employmentType: "Full-time",
+  },
+  educationDetails: {
+    qualification: "Bachelor of Technology",
+    institution: "Acropolis Institute of Technology",
+    yearOfPassing: 2012,
+    grade: "A",
+  },
+  bankDetails: {
+    bankName: "State Bank of India",
+    accountNumber: "123456789012",
+    ifscCode: "SBIN0001234",
+    branchName: "Indore Main Branch",
+    accountHolderName: "John Doe",
+    aadharNumber: "123412341234",
+    panNumber: "ABCDE1234F",
+  },
+};

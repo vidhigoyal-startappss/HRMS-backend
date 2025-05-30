@@ -1,24 +1,25 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import * as dotenv from 'dotenv';
 
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module'; // ✅ Import this too
+// Load .env variables
+dotenv.config();
+
+const mongoUri = process.env.MONGO_URI;
+
+if (!mongoUri) {
+  throw new Error('MONGO_URI is not defined in environment variables');
+}
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // makes env variables accessible globally
+      isGlobal: true, // Makes config available globally
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI') || '',
-      }),
-      inject: [ConfigService],
-    }),
-    UsersModule,
-    AuthModule, // ✅ Add this line to enable /signup and /login routes
+    MongooseModule.forRoot(mongoUri),
+    AuthModule,
   ],
 })
 export class AppModule {}
