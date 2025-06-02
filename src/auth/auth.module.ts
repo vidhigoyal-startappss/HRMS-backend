@@ -9,7 +9,7 @@ import { User, UserSchema } from './user.schema';
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret: process.env.JWT_SECRET || 'hrms1234secret',
       signOptions: { expiresIn: '1d' },
     }),
   ],

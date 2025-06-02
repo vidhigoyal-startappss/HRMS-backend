@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import * as dotenv from 'dotenv';
+import { EmployeeModule } from './employee/employee.module'; // updated path and name
 
 // Load .env variables
 dotenv.config();
@@ -16,10 +17,11 @@ if (!mongoUri) {
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Makes config available globally
+      isGlobal: true,
     }),
     MongooseModule.forRoot(mongoUri),
     AuthModule,
+    EmployeeModule, // renamed
   ],
 })
 export class AppModule {}
