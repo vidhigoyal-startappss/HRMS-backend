@@ -60,12 +60,16 @@ export class AuthService {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    const token = this.jwtService.sign({
+    // ✅ Sign the JWT with sub, email, and role (if needed)
+    const payload = {
       sub: user._id,
       email: user.email,
       role: user.role,
-    });
+    };
 
+    const token = this.jwtService.sign(payload); // you can also use signAsync
+
+    // ✅ This is important — the frontend expects a `token`
     return {
       message: `${user.role} login successful`,
       token,
