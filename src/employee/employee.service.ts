@@ -19,12 +19,7 @@ export class EmployeeService {
 
       const hashedPassword = await bcrypt.hash(account.password, 10);
 
-      const employee = new this.employeeModel({
         account: {
-          ...account,
-          password: hashedPassword,
-        },
-        basicDetails,
         educationDetails,
         bankDetails,
       });
@@ -47,7 +42,7 @@ export class EmployeeService {
   }
 
   async findOneByEmail(email: string): Promise<Employee | null> {
-    return this.employeeModel.findOne({ 'account.email': email }).exec();
+    return this.employeeModel.findOne({ "account.email": email }).exec();
   }
 
   async findById(id: string): Promise<Employee | null> {

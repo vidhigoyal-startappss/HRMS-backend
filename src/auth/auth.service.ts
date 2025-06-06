@@ -8,11 +8,15 @@ import { Model } from "mongoose";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
 import { User, UserDocument } from "./user.schema";
+import { Employee, EmployeeDocument } from "../employee/employee.schema";
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(User.name)
+    private userModel: Model<UserDocument>,
+    @InjectModel(Employee.name)
+    private employeeModel: Model<EmployeeDocument>,
     private jwtService: JwtService,
   ) {}
 
@@ -25,22 +29,34 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new this.userModel({ email, password: hashedPassword });
+    const user = new this.userModel({
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      role: "superadmin",
+    });
     await user.save();
 
     return { message: "SuperAdmin created successfully" };
   }
 
   async login(email: string, password: string) {
-    console.log("login called inside");
-    const user = await this.userModel.findOne({ email });
-    console.log(user);
+    const normalizedEmail = email.toLowerCase();
+
+    let user = await this.userModel.findOne({ email: normalizedEmail });
+    if (!user) {
+      user = await this.employeeModel.findOne({ email: normalizedEmail });
+    }
+
     if (!user) {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user?.password);
+    console.log("<<<<<<<<", password);
+    console.log("<<<<<<<<<<<", user?.password);
+    console.log(isPasswordValid);
     if (!isPasswordValid) {
+      console.log("<<<<<<inside password");
       throw new UnauthorizedException("Invalid credentials");
     }
 
@@ -55,7 +71,7 @@ export class AuthService {
 
     // ✅ This is important — the frontend expects a `token`
     return {
-      message: "Login successful",
+      message: `${user.role} login successful`,
       token,
       user: {
         id: user._id,
