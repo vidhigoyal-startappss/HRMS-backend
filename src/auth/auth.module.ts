@@ -1,11 +1,13 @@
-// src/auth/auth.module.ts
 import { Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
 import { User, UserSchema } from "./user.schema";
-import { JwtStrategy } from "./jwt.strategy"; // ✅ Add this line
+import { JwtStrategy } from "./jwt.strategy";
+
+// ✅ Import Employee model and schema
+import { Employee, EmployeeSchema } from "../employee/schemas/employee.schema";
 
 @Module({
   imports: [
@@ -19,7 +21,7 @@ import { JwtStrategy } from "./jwt.strategy"; // ✅ Add this line
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy], // ✅ Register strategy here
-  exports: [AuthService], // Optional: export if used elsewhere
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}
