@@ -75,50 +75,10 @@ const fakeUserData: CreateUserDto = {
 };
 
 
-
-
-
-
-
-
-@Prop({ required: true })
-  firstName: string;
-
-  @Prop({ required: true })
-  lastName: string;
-
-  @Prop({ required: true })
-  phone: string;
-
-  @Prop()
-  dob: string;
-
-  @Prop({ required: true })
-  gender: string;
-
-  @Prop({ required: true })
-  address: string;
-
-  @Prop({ required: true })
-  city: string;
-
-  @Prop({ required: true })
-  state: string;
-
-  @Prop({ required: true })
-  zipCode: string;
-
-  @Prop({ required: true })
-  country: string;
-
-  @Prop()
-  joiningDate: string;
-
-  @Prop()
-  designation: string;
-
-  @Prop()
-  department: string;
-
-  @Prop()
-  employmentType: string;
+----------------------------------------- This for employee id creation -----------------------------------------------------
+s/department/001
+isme jo numbering h wo counting h in format of three numbers starting from 001 to 999
+HR 
+FD (full stack development)
+BD (Business Development)
+DE (Data engineer)

@@ -1,20 +1,29 @@
-import { IsEmail, IsString, MinLength, ValidateNested, IsIn, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
-import { EmployeeDetailsDto } from './employee-details.dto';
+import { IsDefined, ValidateNested } from 'class-validator';
+import { AccountDTO } from './account.dto';
+import { BasicDetailsDTO } from './basic-details.dto';
+import { EducationDetailsDTO } from './education-details.dto';
+import { BankDetailsDTO } from './bank-details.dto';
 
 export class CreateEmployeeDto {
-  @IsEmail()
-  email: string;
-
-  @IsString()
-  @MinLength(6)
-  password: string;
-
-  @IsOptional()
-  @IsIn(['admin', 'hr', 'employee'])
-  role?: string;
-
+  @IsDefined()
   @ValidateNested()
-  @Type(() => EmployeeDetailsDto)
-  employeeDetails: EmployeeDetailsDto;
+  @Type(() => AccountDTO)
+  account: AccountDTO;
+
+  @IsDefined()
+  @ValidateNested()
+  @Type(() => BasicDetailsDTO)
+  basicDetails: BasicDetailsDTO;
+
+  @IsDefined()
+  @ValidateNested()
+  @Type(() => EducationDetailsDTO)
+  educationDetails: EducationDetailsDTO;
+
+  @IsDefined()
+  @ValidateNested()
+  @Type(() => BankDetailsDTO)
+  bankDetails: BankDetailsDTO;
 }
+

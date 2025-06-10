@@ -1,8 +1,15 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString } from 'class-validator';
 
-export class EducationDetailsDto {
-  @IsString() qualification: string;
-  @IsString() institution: string;
-  @IsNumber() yearOfPassing: number;
-  @IsString() grade: string;
+export class EducationDetailsDTO {
+  @IsString()
+  highestQualification: string;
+
+  @IsString()
+  university: string;
+
+  @IsString()
+  yearOfPassing: string;
+
+  @IsString()
+  grade: string;
 }
