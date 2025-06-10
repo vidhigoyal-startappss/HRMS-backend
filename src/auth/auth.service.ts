@@ -40,36 +40,25 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const normalizedEmail = email.toLowerCase();
+  const normalizedEmail = email.toLowerCase();
 
-    let user = await this.userModel.findOne({ email: normalizedEmail });
-    if (!user) {
-      user = await this.employeeModel.findOne({ email: normalizedEmail });
-    }
+  // 1. Try logging in as superadmin/admin from User model
+  let user = await this.userModel.findOne({ email: normalizedEmail });
 
-    if (!user) {
-      throw new UnauthorizedException("Invalid credentials");
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user?.password);
-    console.log("<<<<<<<<", password);
-    console.log("<<<<<<<<<<<", user?.password);
-    console.log(isPasswordValid);
+  if (user) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      console.log("<<<<<<inside password");
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    // ✅ Sign the JWT with sub, email, and role (if needed)
     const payload = {
       sub: user._id,
       email: user.email,
       role: user.role,
     };
 
-    const token = this.jwtService.sign(payload); // you can also use signAsync
+    const token = this.jwtService.sign(payload);
 
-    // ✅ This is important — the frontend expects a `token`
     return {
       message: `${user.role} login successful`,
       token,
@@ -80,4 +69,33 @@ export class AuthService {
       },
     };
   }
+
+  // 2. Try logging in as employee
+  const employee = await this.employeeModel.findOne({ 'account.email': normalizedEmail });
+  if (!employee) {
+    throw new UnauthorizedException("Invalid credentials");
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, employee.account.password);
+  if (!isPasswordValid) {
+    throw new UnauthorizedException("Invalid credentials");
+  }
+
+  const payload = {
+    sub: employee._id,
+    email: employee.account.email,
+    role: employee.account.role,
+  };
+
+  const token = this.jwtService.sign(payload);
+
+  return {
+    message: `${employee.account.role} login successful`,
+    token,
+    user: {
+      id: employee._id,
+      email: employee.account.email,
+      role: employee.account.role,
+    },
+  };
 }
