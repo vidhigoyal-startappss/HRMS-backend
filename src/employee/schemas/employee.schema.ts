@@ -4,7 +4,6 @@ import { Account, AccountSchema } from './account.schema';
 import { BasicDetails, BasicDetailsSchema } from './basic-details.schema';
 import { EducationDetails, EducationDetailsSchema } from './education-details.schema';
 import { BankDetails, BankDetailsSchema } from './bank-details.schema';
-
 import mongoose, { Schema as MongooseSchema } from 'mongoose';
 
 
@@ -23,4 +22,5 @@ export class Employee extends Document {
   bankDetails: BankDetails;
 }
 
+export type EmployeeDocument = Employee & Document;
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
