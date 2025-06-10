@@ -9,6 +9,10 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
 import { User, UserDocument } from "./user.schema";
 import { Employee, EmployeeDocument } from "../employee/schemas/employee.schema";
+import {
+  Employee,
+  EmployeeDocument,
+} from "src/employee/schemas/employee.schema";
 
 @Injectable()
 export class AuthService {
@@ -94,10 +98,12 @@ export class AuthService {
       sub: employeeDoc._id,
       email: employee.account.email,
       role: employee.account.role,
+      sub: user._id,
+      email: isEmployee ? user.account.email : user.email,
+      role: isEmployee ? user.account.role : user.role,
     };
 
     const token = this.jwtService.sign(payload);
-
     return {
       message: `${employee.account.role} login successful`,
       token,
@@ -105,6 +111,12 @@ export class AuthService {
         id: employeeDoc._id,
         email: employee.account.email,
         role: employee.account.role,
+      message: `${payload.role} login successful`,
+      token,
+      user: {
+        id: user._id,
+        email: payload.email,
+        role: payload.role,
       },
     };
   }
