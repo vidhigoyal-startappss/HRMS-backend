@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 // src/employee/employee.service.ts
 import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
@@ -6,7 +6,6 @@ import { Model } from "mongoose";
 import * as bcrypt from "bcryptjs";
 import { CreateEmployeeDto } from "./dto/create-employee.dto";
 import { Employee, EmployeeDocument } from "./schemas/employee.schema";
-=======
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -15,8 +14,6 @@ import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { Employee } from './schemas/employee.schema';
 import { EmployeeSummaryDto } from './dto/employee-summary.dto';
 import * as bcrypt from 'bcryptjs';
->>>>>>> 5f1b9e6f23c750f4adcac84eca3bad2ded0e3019
-
 @Injectable()
 export class EmployeeService {
   constructor(
