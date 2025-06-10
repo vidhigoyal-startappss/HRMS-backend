@@ -5,8 +5,8 @@ import { JwtModule } from "@nestjs/jwt";
 import { AuthService } from "./auth.service";
 import { AuthController } from "./auth.controller";
 import { User, UserSchema } from "./user.schema";
-import { JwtStrategy } from "./jwt.strategy"; // ✅ Add this line
-
+import { JwtStrategy } from "./jwt.strategy";
+import { Employee, EmployeeSchema } from "src/employee/schemas/employee.schema";
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -19,7 +19,7 @@ import { JwtStrategy } from "./jwt.strategy"; // ✅ Add this line
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy], // ✅ Register strategy here
-  exports: [AuthService], // Optional: export if used elsewhere
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

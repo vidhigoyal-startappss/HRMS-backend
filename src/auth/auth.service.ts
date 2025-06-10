@@ -8,7 +8,10 @@ import { Model } from "mongoose";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
 import { User, UserDocument } from "./user.schema";
-import { Employee, EmployeeDocument } from "../employee/employee.schema";
+import {
+  Employee,
+  EmployeeDocument,
+} from "src/employee/schemas/employee.schema";
 
 @Injectable()
 export class AuthService {
@@ -40,43 +43,43 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    const normalizedEmail = email.toLowerCase();
+    let user: any = await this.userModel.findOne({ email: email });
+    let isEmployee = false;
+    console.log(user);
 
-    let user = await this.userModel.findOne({ email: normalizedEmail });
     if (!user) {
-      user = await this.employeeModel.findOne({ email: normalizedEmail });
+      user = await this.employeeModel.findOne({
+        "account.email": email,
+      });
+      isEmployee = true;
+      console.log(user);
     }
 
     if (!user) {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user?.password);
-    console.log("<<<<<<<<", password);
-    console.log("<<<<<<<<<<<", user?.password);
-    console.log(isPasswordValid);
+    const hashedPassword = isEmployee ? user.account.password : user.password;
+    const isPasswordValid = await bcrypt.compare(password, hashedPassword);
+
     if (!isPasswordValid) {
-      console.log("<<<<<<inside password");
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    // ✅ Sign the JWT with sub, email, and role (if needed)
     const payload = {
       sub: user._id,
-      email: user.email,
-      role: user.role,
+      email: isEmployee ? user.account.email : user.email,
+      role: isEmployee ? user.account.role : user.role,
     };
 
-    const token = this.jwtService.sign(payload); // you can also use signAsync
-
-    // ✅ This is important — the frontend expects a `token`
+    const token = this.jwtService.sign(payload);
     return {
-      message: `${user.role} login successful`,
+      message: `${payload.role} login successful`,
       token,
       user: {
         id: user._id,
-        email: user.email,
-        role: user.role,
+        email: payload.email,
+        role: payload.role,
       },
     };
   }

@@ -1,13 +1,13 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { Account, AccountSchema } from './account.schema';
-import { BasicDetails, BasicDetailsSchema } from './basic-details.schema';
-import { EducationDetails, EducationDetailsSchema } from './education-details.schema';
-import { BankDetails, BankDetailsSchema } from './bank-details.schema';
-
-import mongoose, { Schema as MongooseSchema } from 'mongoose';
-
-
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { Schema as MongooseSchema } from "mongoose";
+import { Document } from "mongoose";
+import { Account, AccountSchema } from "./account.schema";
+import { BasicDetails, BasicDetailsSchema } from "./basic-details.schema";
+import {
+  EducationDetails,
+  EducationDetailsSchema,
+} from "./education-details.schema";
+import { BankDetails, BankDetailsSchema } from "./bank-details.schema";
 @Schema({ timestamps: true })
 export class Employee extends Document {
   @Prop({ type: AccountSchema, required: true })
@@ -24,3 +24,4 @@ export class Employee extends Document {
 }
 
 export const EmployeeSchema = SchemaFactory.createForClass(Employee);
+export type EmployeeDocument = Employee & Document;
