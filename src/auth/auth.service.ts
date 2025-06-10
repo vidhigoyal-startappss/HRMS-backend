@@ -43,25 +43,13 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-    let user: any = await this.userModel.findOne({ email: email });
-    let isEmployee = false;
-    console.log(user);
+  const normalizedEmail = email.toLowerCase();
 
-    if (!user) {
-      user = await this.employeeModel.findOne({
-        "account.email": email,
-      });
-      isEmployee = true;
-      console.log(user);
-    }
+  // 1. Try logging in as superadmin/admin from User model
+  let user = await this.userModel.findOne({ email: normalizedEmail });
 
-    if (!user) {
-      throw new UnauthorizedException("Invalid credentials");
-    }
-
-    const hashedPassword = isEmployee ? user.account.password : user.password;
-    const isPasswordValid = await bcrypt.compare(password, hashedPassword);
-
+  if (user) {
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException("Invalid credentials");
     }
@@ -83,4 +71,33 @@ export class AuthService {
       },
     };
   }
+
+  // 2. Try logging in as employee
+  const employee = await this.employeeModel.findOne({ 'account.email': normalizedEmail });
+  if (!employee) {
+    throw new UnauthorizedException("Invalid credentials");
+  }
+
+  const isPasswordValid = await bcrypt.compare(password, employee.account.password);
+  if (!isPasswordValid) {
+    throw new UnauthorizedException("Invalid credentials");
+  }
+
+  const payload = {
+    sub: employee._id,
+    email: employee.account.email,
+    role: employee.account.role,
+  };
+
+  const token = this.jwtService.sign(payload);
+
+  return {
+    message: `${employee.account.role} login successful`,
+    token,
+    user: {
+      id: employee._id,
+      email: employee.account.email,
+      role: employee.account.role,
+    },
+  };
 }
