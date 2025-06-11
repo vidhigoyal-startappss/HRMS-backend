@@ -8,7 +8,11 @@ import { Model } from "mongoose";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
 import { User, UserDocument } from "./user.schema";
-import { Employee, EmployeeDocument } from "../employee/employee.schema";
+import { Employee, EmployeeDocument } from "../employee/schemas/employee.schema";
+import {
+  Employee,
+  EmployeeDocument,
+} from "src/employee/schemas/employee.schema";
 
 @Injectable()
 export class AuthService {
@@ -40,62 +44,80 @@ export class AuthService {
   }
 
   async login(email: string, password: string) {
-  const normalizedEmail = email.toLowerCase();
+    const normalizedEmail = email.toLowerCase();
 
-  // 1. Try logging in as superadmin/admin from User model
-  let user = await this.userModel.findOne({ email: normalizedEmail });
+    // 1. Try logging in as superadmin/admin from User model
+    const user = await this.userModel.findOne({ email: normalizedEmail });
 
-  if (user) {
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (user) {
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        throw new UnauthorizedException("Invalid credentials");
+      }
+
+      const payload = {
+        sub: user._id,
+        email: user.email,
+        role: user.role,
+      };
+
+      const token = this.jwtService.sign(payload);
+
+      return {
+        message: `${user.role} login successful`,
+        token,
+        user: {
+          id: user._id,
+          email: user.email,
+          role: user.role,
+        },
+      };
+    }
+
+    // 2. Try logging in as employee
+    const employeeDoc = await this.employeeModel.findOne({
+      "account.email": normalizedEmail,
+    });
+
+    if (!employeeDoc) {
+      throw new UnauthorizedException("Invalid credentials");
+    }
+
+    // Cast employeeDoc to Employee so TypeScript knows about nested fields
+    const employee = employeeDoc as unknown as Employee;
+
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      employee.account.password,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException("Invalid credentials");
     }
 
     const payload = {
+      sub: employeeDoc._id,
+      email: employee.account.email,
+      role: employee.account.role,
       sub: user._id,
-      email: user.email,
-      role: user.role,
+      email: isEmployee ? user.account.email : user.email,
+      role: isEmployee ? user.account.role : user.role,
     };
 
     const token = this.jwtService.sign(payload);
-
     return {
-      message: `${user.role} login successful`,
+      message: `${employee.account.role} login successful`,
+      token,
+      user: {
+        id: employeeDoc._id,
+        email: employee.account.email,
+        role: employee.account.role,
+      message: `${payload.role} login successful`,
       token,
       user: {
         id: user._id,
-        email: user.email,
-        role: user.role,
+        email: payload.email,
+        role: payload.role,
       },
     };
   }
-
-  // 2. Try logging in as employee
-  const employee = await this.employeeModel.findOne({ 'account.email': normalizedEmail });
-  if (!employee) {
-    throw new UnauthorizedException("Invalid credentials");
-  }
-
-  const isPasswordValid = await bcrypt.compare(password, employee.account.password);
-  if (!isPasswordValid) {
-    throw new UnauthorizedException("Invalid credentials");
-  }
-
-  const payload = {
-    sub: employee._id,
-    email: employee.account.email,
-    role: employee.account.role,
-  };
-
-  const token = this.jwtService.sign(payload);
-
-  return {
-    message: `${employee.account.role} login successful`,
-    token,
-    user: {
-      id: employee._id,
-      email: employee.account.email,
-      role: employee.account.role,
-    },
-  };
 }
