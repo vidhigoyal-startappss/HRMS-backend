@@ -9,10 +9,6 @@ import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs";
 import { User, UserDocument } from "./user.schema";
 import { Employee, EmployeeDocument } from "../employee/schemas/employee.schema";
-import {
-  Employee,
-  EmployeeDocument,
-} from "src/employee/schemas/employee.schema";
 
 @Injectable()
 export class AuthService {
@@ -21,15 +17,13 @@ export class AuthService {
     private userModel: Model<UserDocument>,
     @InjectModel(Employee.name)
     private employeeModel: Model<EmployeeDocument>,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async signup(email: string, password: string) {
     const users = await this.userModel.find();
     if (users.length > 0) {
-      throw new BadRequestException(
-        "Signup disabled. SuperAdmin already exists.",
-      );
+      throw new BadRequestException("Signup disabled. SuperAdmin already exists.");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -46,7 +40,7 @@ export class AuthService {
   async login(email: string, password: string) {
     const normalizedEmail = email.toLowerCase();
 
-    // 1. Try logging in as superadmin/admin from User model
+    // 1. Try logging in as superadmin/admin
     const user = await this.userModel.findOne({ email: normalizedEmail });
 
     if (user) {
@@ -83,12 +77,11 @@ export class AuthService {
       throw new UnauthorizedException("Invalid credentials");
     }
 
-    // Cast employeeDoc to Employee so TypeScript knows about nested fields
     const employee = employeeDoc as unknown as Employee;
 
     const isPasswordValid = await bcrypt.compare(
       password,
-      employee.account.password,
+      employee.account.password
     );
     if (!isPasswordValid) {
       throw new UnauthorizedException("Invalid credentials");
@@ -98,12 +91,10 @@ export class AuthService {
       sub: employeeDoc._id,
       email: employee.account.email,
       role: employee.account.role,
-      sub: user._id,
-      email: isEmployee ? user.account.email : user.email,
-      role: isEmployee ? user.account.role : user.role,
     };
 
     const token = this.jwtService.sign(payload);
+
     return {
       message: `${employee.account.role} login successful`,
       token,
@@ -111,12 +102,6 @@ export class AuthService {
         id: employeeDoc._id,
         email: employee.account.email,
         role: employee.account.role,
-      message: `${payload.role} login successful`,
-      token,
-      user: {
-        id: user._id,
-        email: payload.email,
-        role: payload.role,
       },
     };
   }
