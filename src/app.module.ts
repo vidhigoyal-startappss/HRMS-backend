@@ -7,6 +7,7 @@ import { LeaveModule } from './leave/leave.module';
 import { ManageUsersModule } from './manage-users/manage-users.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { PayrollModule } from './payroll/payroll.module';
+import { EventsModule} from './events/events.module';
 import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
@@ -40,6 +41,7 @@ import { MulterModule } from '@nestjs/platform-express';
     ManageUsersModule,
     AttendanceModule,
     PayrollModule,
+    EventsModule,
   ],
 })
 export class AppModule {}
