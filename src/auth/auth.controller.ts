@@ -12,24 +12,23 @@ import {
   HttpCode,
   Delete,
   Query,
-  HttpStatus
-  
+  HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { uploadToCloudinary } from 'src/common/utils/cloudinary-upload';
+import * as sharp from 'sharp';
+import { memoryStorage } from 'multer';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { UpdateCompleteProfileDto } from './dto/update-complete-profile.dto';
-import { Express } from 'express'; 
+import { Express } from 'express';
 import { Roles } from './decorators/roles.decorator';
 import { RolesGuard } from './guards/roles.guard';
-import { ForgotPasswordDto } from './dto/forgot-reset-password.dto';
-import { ResetPasswordDto } from './dto/forgot-reset-password.dto';
+import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-reset-password.dto';
 import { SelfOrRoleGuard } from './guards/self-or-role.guard';
-
 
 @Controller('users')
 export class AuthController {
@@ -37,18 +36,15 @@ export class AuthController {
 
   @Get('first-user-check')
   async isFirstUser(): Promise<{ isFirst: boolean }> {
-    const isFirst = await this.authService.isFirstUser(); // assuming the method is in UsersService
+    const isFirst = await this.authService.isFirstUser();
     return { isFirst };
   }
 
   @Post('register')
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
-  async register(
-    @Req() req: any,
-    @Body() registerDto: RegisterDto,
-  ) {
-    return this.authService.register(registerDto,req.user?.userId);
+  async register(@Req() req: any, @Body() registerDto: RegisterDto) {
+    return this.authService.register(registerDto, req.user?.userId);
   }
 
   @Post('complete-profile/:userId')
@@ -56,10 +52,10 @@ export class AuthController {
   @HttpCode(201)
   async updateCompleteProfile(
     @Req() req: any,
-    @Param('userId') userId: string, // Optional from body
+    @Param('userId') userId: string,
     @Body() dto: UpdateCompleteProfileDto,
   ) {
-    const targetUserId = userId || req.user.userId; // HR/Employee distinction
+    const targetUserId = userId || req.user.userId;
     return this.authService.updateCompleteProfile(targetUserId, dto);
   }
 
@@ -77,14 +73,14 @@ export class AuthController {
       userId: req.user.userId,
       email: req.user.email,
       role: req.user.role,
-      name:req.user.firstName,
+      name: req.user.firstName,
       customPermissions: req.user.customPermissions,
       employeeId: req.user.employeeId,
     };
   }
 
-  @UseGuards(JwtAuthGuard,RolesGuard,SelfOrRoleGuard)
-  @Roles("Employee","HR","Admin","SuperAdmin")
+  @UseGuards(JwtAuthGuard, RolesGuard, SelfOrRoleGuard)
+  @Roles('Employee', 'HR', 'Admin', 'SuperAdmin')
   @Get('employee/:id')
   @HttpCode(200)
   async getEmployeeById(@Param('id') id: string) {
@@ -95,40 +91,62 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './uploads/profile-images',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
-        },
-      }),
+      storage: memoryStorage(),
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.startsWith('image/')) {
+          return cb(new Error('Only image files are allowed!'), false);
+        }
+        cb(null, true);
+      },
+      limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
     }),
   )
-  async uploadProfileImage(@UploadedFile() file: Express.Multer.File, @Req() req,  @Param('userId') userId: string,
-) {
+  async uploadProfileImage(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req,
+    @Param('userId') userId: string,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Image file is required');
+    }
+
     const targetUserId = userId || req.user.userId;
-    const imageUrl = `http://localhost:3000/uploads/profile-images/${file.filename}`;
-    return this.authService.updateProfileImage(targetUserId, imageUrl);
+
+    // Compress image
+    const compressedBuffer = await sharp(file.buffer)
+      .resize({ width: 500 })
+      .jpeg({ quality: 70 })
+      .toBuffer();
+
+    // Upload to Cloudinary
+    const uploadResult: any = await uploadToCloudinary(compressedBuffer, 'profile-images');
+    const imageUrl = uploadResult.secure_url;
+
+    await this.authService.updateProfileImage(targetUserId, imageUrl);
+
+    return {
+      message: 'Profile image uploaded successfully',
+      imageUrl,
+    };
   }
 
-  @UseGuards(JwtAuthGuard,RolesGuard,SelfOrRoleGuard)
-  @Roles("Employee","HR","Admin","SuperAdmin")
+  @UseGuards(JwtAuthGuard, RolesGuard, SelfOrRoleGuard)
+  @Roles('Employee', 'HR', 'Admin', 'SuperAdmin')
   @Patch('employee/:id')
   async updateProfile(
-      @Param('id') userId: string,
-      @Body() updateUserDto: UpdateCompleteProfileDto,
-    ) {
-      return this.authService.updateProfile(userId, updateUserDto);
-    }
-  
-  @UseGuards(JwtAuthGuard,RolesGuard,SelfOrRoleGuard)
-  @Roles("HR","Admin","SuperAdmin")
+    @Param('id') userId: string,
+    @Body() updateUserDto: UpdateCompleteProfileDto,
+  ) {
+    return this.authService.updateProfile(userId, updateUserDto);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard, SelfOrRoleGuard)
+  @Roles('HR', 'Admin', 'SuperAdmin')
   @Get('employees')
   async getEmployeesOnly(@Query('archived') archived: string, @Req() req) {
-    const userRole=req?.user?.role
+    const userRole = req?.user?.role;
     const showDeleted = archived === 'true';
-    return this.authService.findEmployeesOnly(userRole,showDeleted);
+    return this.authService.findEmployeesOnly(userRole, showDeleted);
   }
 
   @Get('profile-image/:id')
@@ -136,6 +154,7 @@ export class AuthController {
     const imageUrl = await this.authService.getProfileImage(id);
     return { imageUrl };
   }
+
   @Post('forgot-password')
   async forgotPassword(@Body() body: ForgotPasswordDto) {
     return this.authService.sendResetPasswordLink(body.email);
@@ -149,9 +168,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SuperAdmin')
   @Delete('delete/:id')
-  async softDeleteUser(@Param('id') id: string, @Req() req: any) {
+  async softDeleteUser(@Param('id') id: string) {
     return this.authService.deleteUser(id);
   }
-
-
 }
