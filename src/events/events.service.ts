@@ -1,90 +1,70 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Event, EventDocument } from './schemas/event.schema';
-import { Model } from 'mongoose';
-import { CreateEventDto } from './dto/create-event.dto';
 import { User, UserDocument } from '../auth/schemas/user.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class EventsService {
   constructor(
-    @InjectModel(Event.name) private eventModel: Model<EventDocument>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
-  // ✅ Create new event from user
-  // async create(createEventDto: CreateEventDto): Promise<Event> {
-  //   const user = await this.userModel.findById(createEventDto.user);
-  //   if (!user) {
-  //     throw new NotFoundException('User not found');
-  //   }
-
-  //   const event = new this.eventModel({
-  //     ...createEventDto,
-  //     firstName: user.firstName,
-  //     lastName: user.lastName,
-  //     dob: user.dob,
-  //     joiningDate: user.joiningDate,
-  //     profileImage: user.profileImage,
-  //   });
-
-  //   return event.save();
-  // }
-
-  async createEvent(createEventDto: CreateEventDto): Promise<Event> {
-  const { dob, joiningDate } = createEventDto as any;
-
-  // Automatically set type based on date fields
-  if (!createEventDto.type) {
-    if (dob) {
-      createEventDto.type = 'birthday';
-    } else if (joiningDate) {
-      createEventDto.type = 'anniversary';
-    }
-  }
-
-  const createdEvent = new this.eventModel(createEventDto);
-  return await createdEvent.save();
-}
-
-
-  // ✅ Get all events (optionally filtered by type)
-  async findAll(type?: string): Promise<Event[]> {
-    const query: any = {};
-    if (type) {
-      query.type = type;
-    }
-
-    return this.eventModel
-      .find(query)
-      .populate('user', 'firstName lastName profileImage') // only needed fields
-      .sort({ createdAt: -1 });
-  }
-
-  // ✅ Get today's birthdays and anniversaries
-  async findTodayEvents(): Promise<Event[]> {
+  async getTodayEventsByType(type: string) {
     const today = new Date();
-    const day = today.getDate();
-    const month = today.getMonth();
+    const todayDayMonth = this.formatDayMonth(today);
 
-    const allEvents = await this.eventModel.find().populate('user', 'firstName lastName profileImage');
+    if (type === 'birthday') {
+      const users = await this.userModel.find({
+        // isDeleted: false,
+        // dob: { $exists: true, $ne: null },
+      });
 
-    return allEvents.filter((event) => {
-      if (event.type === 'birthday' && event.dob) {
-        const dob = new Date(event.dob);
-        return dob.getDate() === day && dob.getMonth() === month;
-      }
+      const birthdays = users.filter((user) => {
+        const userDob = new Date(user.dob);
+        const userDayMonth = this.formatDayMonth(userDob);
+        return userDayMonth === todayDayMonth;
+      });
+      console.log(birthdays);
 
-      if (event.type === 'anniversary' && event.joiningDate) {
-        const joinDate = new Date(event.joiningDate);
-        return joinDate.getDate() === day && joinDate.getMonth() === month;
-      }
+      return birthdays.map((user) => ({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        profileImage: user.profileImage,
+        title: 'Birthday',
+        type: 'birthday',
+      }));
+    }
 
-      return false;
-    });
+    if (type === 'anniversary') {
+      const users = await this.userModel.find({
+        isDeleted: false,
+        joiningDate: { $exists: true, $ne: null },
+      });
+
+      const anniversaries = users.filter((user) => {
+        const userJoin = new Date(user.joiningDate);
+        const userDayMonth = this.formatDayMonth(userJoin);
+        return userDayMonth === todayDayMonth;
+      });
+
+      return anniversaries.map((user) => ({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        profileImage: user.profileImage,
+        title: 'Work Anniversary',
+        type: 'anniversary',
+      }));
+    }
+
+    return [];
   }
-  async findByType(type: string): Promise<Event[]> {
-  return this.eventModel.find({ type }).exec();
-}
 
+  private formatDayMonth(date: Date): string {
+  const d = new Date(date);
+  const day = d.getDate();         
+  const month = d.getMonth() + 1; 
+  return `${day}-${month}`;
+}
 }
