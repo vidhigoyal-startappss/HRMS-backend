@@ -198,6 +198,8 @@ async findEmployeesOnly(userRole: string, showDeleted = false) {
     const user = await this.userModel.findById(userId);
     return user?.profileImage;
   }
+  
+//   ishan api 
 
   async sendResetPasswordLink(email: string) {
     const user = await this.userModel.findOne({ email });
@@ -214,7 +216,9 @@ async findEmployeesOnly(userRole: string, showDeleted = false) {
     const resetLink = `http://localhost:3001/reset-password?token=${token}`;
     await this.emailService.sendResetLinkToEmail(email, resetLink);
 
-    return { message: 'Reset link sent successfully' };
+    return { message: 'Reset link sent successfully',
+      token:token
+     };
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -236,6 +240,42 @@ async findEmployeesOnly(userRole: string, showDeleted = false) {
       throw new BadRequestException('Invalid or expired token');
     }
   }
+
+
+// Ishan API
+
+async changePassword(token: string, newPassword: string, oldPassword: string) {
+  try {
+    if (!token) {
+      throw new BadRequestException("Invalid token or token missing");
+    }
+
+    const payload = this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET, 
+    });
+
+    const user = await this.userModel.findById(payload.userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    if (oldPassword) {
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        throw new BadRequestException('Old password is incorrect');
+      }
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.userModel.findByIdAndUpdate(payload.userId, {
+      password: hashedPassword,
+    });
+
+    return { message: 'Password updated successfully' };
+  } catch (err) {
+    throw new BadRequestException('Invalid or expired token');
+  }
+}
+
+
 
  async deleteUser(userId: string) {
   const user = await this.userModel.findById(userId);
