@@ -9,12 +9,14 @@ import { Model } from 'mongoose';
 import { Leave, LeaveDocument } from './schemas/leave.schema';
 import { User, UserDocument } from '../auth/schemas/user.schema';
 import mongoose from 'mongoose';
+import { NotificationService } from 'src/notification/notification.service';
 
 @Injectable()
 export class LeaveService {
   constructor(
     @InjectModel(Leave.name) private leaveModel: Model<LeaveDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private readonly notificationService: NotificationService,
   ) {}
 
   // 🧠 Utility to calculate working leave days
@@ -43,41 +45,53 @@ export class LeaveService {
 
   // 📝 Apply for a new leave
 
-  async applyLeave(
-    user: { userId: string; customPermissions: Record<string, string[]> },
-    data: any,
-  ) {
-    if (!user.customPermissions['leaves']?.includes('write')) {
-      throw new ForbiddenException('You do not have permission to apply for leave');
-    }
-
-    const { startDate, endDate, dayType } = data;
-
-    const overlappingLeave = await this.leaveModel.findOne({
-      userId: user.userId,
-      $or: [
-        {
-          startDate: { $lte: endDate },
-          endDate: { $gte: startDate },
-        },
-      ],
-    });
-
-    if (overlappingLeave) {
-      throw new BadRequestException('You already have a leave request for this date range');
-    }
-
-      let noOfDays = this.calculateLeaveDays(startDate, endDate, dayType);
-
-    const leave = new this.leaveModel({
-      ...data,
-      endDate: (dayType === 'halfday') ? null : endDate,
-      noOfDays,
-      userId: user.userId,
-      status: 'Pending',
-    });
-    return leave.save();
+async applyLeave(
+  user: { userId: string; name: string; customPermissions: Record<string, string[]> },
+  data: any,
+) {
+  if (!user.customPermissions['leaves']?.includes('write')) {
+    throw new ForbiddenException('You do not have permission to apply for leave');
   }
+
+  const { startDate, endDate, dayType } = data;
+
+  const overlappingLeave = await this.leaveModel.findOne({
+    userId: user.userId,
+    $or: [
+      {
+        startDate: { $lte: endDate },
+        endDate: { $gte: startDate },
+      },
+    ],
+  });
+
+  if (overlappingLeave) {
+    throw new BadRequestException('You already have a leave request for this date range');
+  }
+
+  const noOfDays = this.calculateLeaveDays(startDate, endDate, dayType);
+
+  const leave = new this.leaveModel({
+    ...data,
+    endDate: dayType === 'halfday' ? null : endDate,
+    noOfDays,
+    userId: user.userId,
+    status: 'Pending',
+  });
+
+  const savedLeave = await leave.save(); // ✅ await needed
+
+  // ✅ Notify HR/Admin after successful save
+  await this.notificationService.notifyRoles(['HR', 'Admin'], {
+    title: 'New Leave Request',
+    message: `${user.name} has submitted a leave request from ${startDate} to ${endDate}.`,
+    type: 'action',
+    relatedModule: 'Leave',
+  });
+
+  return savedLeave;
+}
+
 
   // 📄 Fetch all or personal leaves
   async fetchLeaves(user: {
