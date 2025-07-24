@@ -80,10 +80,10 @@ export class BasicDetailsDto {
   @IsOptional()
   employmentType?: string;
 
-  @IsDefined()
-  @ValidateNested()
-  @Type(() => LeavesDto) 
-  leaves: LeavesDto;
+  // @IsDefined()
+  // @ValidateNested()
+  // @Type(() => LeavesDto) 
+  // // leaves: LeavesDto;
 
 }
 
