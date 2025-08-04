@@ -25,22 +25,46 @@ async getUserNotifications(userId: string) {
   }).sort({ createdAt: -1 });
 }
 
-  async markAsRead(notificationId: string) {
-    return this.notificationModel.findByIdAndUpdate(notificationId, { isRead: true });
+async markAsRead(notificationId: string) {
+    const updated = await this.notificationModel.findByIdAndUpdate(
+      notificationId,
+      { isRead: true },
+      { new: true }, // Return updated doc
+    );
+    if (!updated) {
+      throw new NotFoundException('Notification not found');
+    }
+    return updated;
   }
 
-  
-  async notifyRoles(
-    roles: string[],
-    payload: Omit<CreateNotificationDto, 'recipient'>,
-  ) {
-    const users = await this.userModel.find({ role: { $in: roles } });
-
-    const notifications = users.map((user) => ({
-      ...payload,
-      recipient: user._id,
-    }));
-
-    return this.notificationModel.insertMany(notifications);
+  async markAllAsRead(userId: string) {
+    const result = await this.notificationModel.updateMany(
+      { recipient: new Types.ObjectId(userId), isRead: false },
+      { $set: { isRead: true } },
+    );
+    return { modifiedCount: result.modifiedCount };
   }
+
+
+async notifyRoles(
+  roles: string[],
+  payload: Omit<CreateNotificationDto, 'recipient'>,
+  excludeUserId?: string, // optional parameter to exclude actor
+) {
+  const filter: any = { role: { $in: roles } };
+
+  if (excludeUserId) {
+    filter._id = { $ne: new Types.ObjectId(excludeUserId) };
+  }
+
+  const users = await this.userModel.find(filter);
+
+  const notifications = users.map((user) => ({
+    ...payload,
+    recipient: user._id,
+  }));
+
+  return this.notificationModel.insertMany(notifications);
+}
+
 }
