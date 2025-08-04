@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ConfigService } from '@nestjs/config';
+// import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
 import { join } from 'path';
@@ -8,16 +8,13 @@ import { join } from 'path';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const configService = app.get(ConfigService);
-  const port = process.env.PORT || configService.get<number>('PORT') || 3000;
-
-  const allowedOrigins = [
-    'http://localhost:3001', // 👈 local development
-    'https://hrms-frontend-oaun.onrender.com', // 👈 production frontend
-  ];
+  const port = parseInt(process.env.PORT, 10) || 3000;
 
   app.enableCors({
-    origin: allowedOrigins,
+    origin: [
+      'http://localhost:3001',
+      'https://hrms-frontend-oaun.onrender.com',
+    ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -32,11 +29,10 @@ async function bootstrap() {
   );
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
-  app.enableShutdownHooks();
   app.setGlobalPrefix('api');
+  app.enableShutdownHooks();
 
   await app.listen(port);
-  console.log(`Server is running on http://localhost:${port}/api`);
+  console.log(`Server running on port ${port}`);
 }
-
 bootstrap();
