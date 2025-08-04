@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { CreateNotificationDto } from './dto/notification.dto';
 import { User, UserDocument } from '../auth/schemas/user.schema'; 
 import { Types } from 'mongoose';
+import { NotFoundException } from '@nestjs/common';
 @Injectable()
 export class NotificationService {
   constructor(
