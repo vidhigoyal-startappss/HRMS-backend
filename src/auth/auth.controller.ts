@@ -29,6 +29,8 @@ import { Roles } from './decorators/roles.decorator';
 import { RolesGuard } from './guards/roles.guard';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-reset-password.dto';
 import { SelfOrRoleGuard } from './guards/self-or-role.guard';
+import { ChangePasswordDto } from './dto/forgot-reset-password.dto';
+
 
 @Controller('users')
 export class AuthController {
@@ -164,7 +166,10 @@ export class AuthController {
   async resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto.token, dto.newPassword);
   }
-
+ @Post('change-password')
+  async changePassword(@Body() dto: ChangePasswordDto) {
+    return this.authService.changePassword(dto.token, dto.newPassword,dto.oldPassword);
+  }
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('SuperAdmin')
   @Delete('delete/:id')
