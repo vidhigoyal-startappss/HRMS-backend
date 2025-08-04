@@ -4,17 +4,17 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import * as bcrypt from 'bcrypt';
-import { JwtService } from '@nestjs/jwt';
-import { User, UserDocument } from './schemas/user.schema';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
-import { UpdateCompleteProfileDto } from './dto/update-complete-profile.dto';
-import { PERMISSIONS } from './constants/permissions.constant';
-import { EmailService } from 'src/mail/mail.service';
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import * as bcrypt from "bcrypt";
+import { JwtService } from "@nestjs/jwt";
+import { User, UserDocument } from "./schemas/user.schema";
+import { RegisterDto } from "./dto/register.dto";
+import { LoginDto } from "./dto/login.dto";
+import { UpdateCompleteProfileDto } from "./dto/update-complete-profile.dto";
+import { PERMISSIONS } from "./constants/permissions.constant";
+import { EmailService } from "src/mail/mail.service";
 // import { DeleteRequest, DeleteRequestDocument } from './schemas/delete-request.schema';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     // @InjectModel(DeleteRequest.name) private deleteRequestModel: Model<DeleteRequestDocument>,
     private jwtService: JwtService,
-    private emailService: EmailService,
+    private emailService: EmailService
   ) {}
 
   async isFirstUser(): Promise<boolean> {
@@ -32,22 +32,24 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto, creatorId?: string) {
-    const existingUser = await this.userModel.findOne({ email: registerDto.email });
+    const existingUser = await this.userModel.findOne({
+      email: registerDto.email,
+    });
     if (existingUser) {
-      throw new UnauthorizedException('User already exists with this email');
+      throw new UnauthorizedException("User already exists with this email");
     }
 
     const totalUsers = await this.userModel.countDocuments();
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    let role = 'Employee';
+    let role = "Employee";
     let customPermissions: Record<string, string[]> = {};
 
     if (totalUsers === 0) {
-      role = 'SuperAdmin';
+      role = "SuperAdmin";
       customPermissions = PERMISSIONS[role];
     } else {
-      role = registerDto.role || 'Employee';
+      role = registerDto.role || "Employee";
       customPermissions = PERMISSIONS[role] || {};
     }
 
@@ -63,7 +65,10 @@ export class AuthService {
     });
 
     const savedUser = await createdUser.save();
-    await this.emailService.sendUserCredentials(registerDto.email, registerDto.password);
+    await this.emailService.sendUserCredentials(
+      registerDto.email,
+      registerDto.password
+    );
 
     return {
       message: `${savedUser.role} registered successfully`,
@@ -74,22 +79,26 @@ export class AuthService {
     };
   }
 
- async validateUser(email: string, pass: string): Promise<UserDocument | null> {
-  const user = await this.userModel.findOne({
-    email,
-    isDeleted: { $ne: true } })
+  async validateUser(
+    email: string,
+    pass: string
+  ): Promise<UserDocument | null> {
+    const user = await this.userModel.findOne({
+      email,
+      isDeleted: { $ne: true },
+    });
 
-  if (user && (await bcrypt.compare(pass, user.password))) {
-    return user;
+    if (user && (await bcrypt.compare(pass, user.password))) {
+      return user;
+    }
+
+    return null;
   }
-
-  return null;
-}
 
   async login(loginDto: LoginDto) {
     const user = await this.validateUser(loginDto.email, loginDto.password);
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials or User not exists');
+      throw new UnauthorizedException("Invalid credentials or User not exists");
     }
 
     const payload = {
@@ -98,18 +107,18 @@ export class AuthService {
       role: user.role,
       customPermissions: user.customPermissions,
       employeeId: user.employeeId,
-      name: user.firstName + ' ' + user.lastName,
+      name: user.firstName + " " + user.lastName,
     };
 
     return {
-      accessToken: this.jwtService.sign(payload, { expiresIn: '8h' }),
+      accessToken: this.jwtService.sign(payload, { expiresIn: "8h" }),
       user: {
         _id: user._id,
         email: user.email,
         role: user.role,
         customPermissions: PERMISSIONS[user.role],
         employeeId: user.employeeId,
-        name: user.firstName + ' ' + user.lastName,
+        name: user.firstName + " " + user.lastName,
       },
     };
   }
@@ -122,10 +131,10 @@ export class AuthService {
 
     const empType = basicDetails?.employmentType?.toLowerCase();
 
-    if (empType === 'full-time') {
+    if (empType === "full-time") {
       paidLeaveAllowed = 1.5;
       wfhAllowed = 1;
-    } else if (empType === 'intern') {
+    } else if (empType === "intern") {
       paidLeaveAllowed = 0;
       wfhAllowed = 0;
     }
@@ -141,43 +150,43 @@ export class AuthService {
     const updatedUser = await this.userModel.findByIdAndUpdate(
       userId,
       { $set: updateData },
-      { new: true },
+      { new: true }
     );
 
     if (!updatedUser) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException("User not found");
     }
 
     return updatedUser;
   }
 
-async findEmployeesOnly(userRole: string, showDeleted = false) {
-  const baseQuery: any = {
-    isDeleted: showDeleted ? true : { $ne: true }, // either get deleted users or active ones
-  };
+  async findEmployeesOnly(userRole: string, showDeleted = false) {
+    const baseQuery: any = {
+      isDeleted: showDeleted ? true : { $ne: true }, // either get deleted users or active ones
+    };
 
-  if (userRole === 'SuperAdmin') {
-    baseQuery.role = { $nin: ['SuperAdmin'] };
-  } else if (userRole === 'Admin') {
-    baseQuery.role = { $nin: ['SuperAdmin', 'Admin'] };
-  } else if (userRole === 'HR') {
-    baseQuery.role = { $nin: ['SuperAdmin', 'Admin', 'HR'] };
+    if (userRole === "SuperAdmin") {
+      baseQuery.role = { $nin: ["SuperAdmin"] };
+    } else if (userRole === "Admin") {
+      baseQuery.role = { $nin: ["SuperAdmin", "Admin"] };
+    } else if (userRole === "HR") {
+      baseQuery.role = { $nin: ["SuperAdmin", "Admin", "HR"] };
+    }
+
+    return this.userModel.find(baseQuery);
   }
-
-  return this.userModel.find(baseQuery);
-}
 
   async findEmployeeById(userId: string) {
     const user = await this.userModel.findById(userId);
     if (!user || user.isDeleted) {
-      throw new NotFoundException('User not found or deleted');
+      throw new NotFoundException("User not found or deleted");
     }
     return user;
   }
 
   async updateProfile(userId: string, updateUserDto: UpdateCompleteProfileDto) {
     const user = await this.userModel.findById(userId);
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException("User not found");
 
     const flatUpdate = {
       ...(updateUserDto.basicDetails || {}),
@@ -188,11 +197,15 @@ async findEmployeesOnly(userRole: string, showDeleted = false) {
     Object.assign(user, flatUpdate);
     await user.save();
 
-    return { message: 'Profile updated successfully', user };
+    return { message: "Profile updated successfully", user };
   }
 
   async updateProfileImage(userId: string, imageUrl: string) {
-    return this.userModel.findByIdAndUpdate(userId, { profileImage: imageUrl }, { new: true });
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      { profileImage: imageUrl },
+      { new: true }
+    );
   }
 
   async getProfileImage(userId: string) {
@@ -202,20 +215,20 @@ async findEmployeesOnly(userRole: string, showDeleted = false) {
 
   async sendResetPasswordLink(email: string) {
     const user = await this.userModel.findOne({ email });
-    if (!user) throw new NotFoundException('User not found');
+    if (!user) throw new NotFoundException("User not found");
 
     const token = this.jwtService.sign(
       { userId: user._id },
       {
         secret: process.env.JWT_RESET_SECRET,
-        expiresIn: '10m',
-      },
+        expiresIn: "10m",
+      }
     );
 
     const resetLink = `http://localhost:3001/reset-password?token=${token}`;
     await this.emailService.sendResetLinkToEmail(email, resetLink);
 
-    return { message: 'Reset link sent successfully' };
+    return { message: "Reset link sent successfully", token: token };
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -225,30 +238,64 @@ async findEmployeesOnly(userRole: string, showDeleted = false) {
       });
 
       const user = await this.userModel.findById(payload.userId);
-      if (!user) throw new NotFoundException('User not found');
+      if (!user) throw new NotFoundException("User not found");
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await this.userModel.findByIdAndUpdate(payload.userId, {
         password: hashedPassword,
       });
 
-      return { message: 'Password reset successfully' };
+      return { message: "Password reset successfully" };
     } catch (err) {
-      throw new BadRequestException('Invalid or expired token');
+      throw new BadRequestException("Invalid or expired token");
     }
   }
 
- async deleteUser(userId: string) {
-  const user = await this.userModel.findById(userId);
-  if (!user) throw new NotFoundException('User not found');
-  if (user.isDeleted) {
-    throw new BadRequestException('User already deleted');
-  }
-  user.isDeleted = true;
-  await user.save();
-  return { message: 'User soft deleted successfully' };
-}
+  async changePassword(
+    token: string,
+    newPassword: string,
+    oldPassword: string
+  ) {
+    try {
+      if (!token) {
+        throw new BadRequestException("Invalid token or token missing");
+      }
 
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      const user = await this.userModel.findById(payload.userId);
+      if (!user) throw new NotFoundException("User not found");
+
+      if (oldPassword) {
+        const isMatch = await bcrypt.compare(oldPassword, user.password);
+        if (!isMatch) {
+          throw new BadRequestException("Old password is incorrect");
+        }
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await this.userModel.findByIdAndUpdate(payload.userId, {
+        password: hashedPassword,
+      });
+
+      return { message: "Password updated successfully" };
+    } catch (err) {
+      throw new BadRequestException("Invalid or expired token");
+    }
+  }
+
+  async deleteUser(userId: string) {
+    const user = await this.userModel.findById(userId);
+    if (!user) throw new NotFoundException("User not found");
+    if (user.isDeleted) {
+      throw new BadRequestException("User already deleted");
+    }
+    user.isDeleted = true;
+    await user.save();
+    return { message: "User soft deleted successfully" };
+  }
 
   // async requestDelete(userId: string, requestedById: string) {
   //   const existing = await this.deleteRequestModel.findOne({
