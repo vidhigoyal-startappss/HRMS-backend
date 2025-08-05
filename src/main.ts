@@ -4,10 +4,23 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as express from 'express';
 import { join } from 'path';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = parseInt(process.env.PORT || '3000', 10);
+
+    const config = new DocumentBuilder()
+        .setTitle('My API')
+        .setDescription('API documentation')
+        .setVersion('1.0')
+        .addTag('example')
+        .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, document);
 
   app.enableCors({
     origin: [
@@ -18,6 +31,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   });
+
+
 
   app.useGlobalPipes(
     new ValidationPipe({

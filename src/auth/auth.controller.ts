@@ -30,13 +30,17 @@ import { RolesGuard } from './guards/roles.guard';
 import { ForgotPasswordDto, ResetPasswordDto } from './dto/forgot-reset-password.dto';
 import { SelfOrRoleGuard } from './guards/self-or-role.guard';
 import { ChangePasswordDto } from './dto/forgot-reset-password.dto';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 
 @Controller('users')
+@ApiTags('AuthController')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('first-user-check')
+  @ApiOperation({ summary: 'this is for check' })
+  @ApiResponse({ status: 200, description: 'Success' })
   async isFirstUser(): Promise<{ isFirst: boolean }> {
     const isFirst = await this.authService.isFirstUser();
     return { isFirst };
