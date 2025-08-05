@@ -27,6 +27,7 @@ async function bootstrap() {
       'http://localhost:3001',
       'https://hrms-frontend-oaun.onrender.com',
         'https://hrms-frontend-5hcc.onrender.com',
+        'https://hrms-startapps-3gm5.vercel.app',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
