@@ -19,7 +19,7 @@ import { MulterModule } from '@nestjs/platform-express';
         MONGO_URI: Joi.string().uri().required(), // MongoDB connection string
         JWT_SECRET: Joi.string().required(), // Secure JWT secret
         PORT: Joi.number().default(3000), // Default server port
-        CORS_ORIGIN: Joi.string().uri().default('http://localhost:3001'), // CORS origin
+        CORS_ORIGIN: Joi.string().uri().default('https://hrms-frontend-5hcc.onrender.com/'), // CORS origin
       }),
     }),
 
