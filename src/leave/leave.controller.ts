@@ -19,7 +19,7 @@ export class LeaveController {
   constructor(private readonly leaveService: LeaveService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('HR', 'Admin', 'SuperAdmin')
+  @Roles('HR', 'Admin', 'Employee')
   @Post('apply')
   async applyLeave(@Req() req: any, @Body() body: any) {
     // Pass the full user object with customPermissions to the service
