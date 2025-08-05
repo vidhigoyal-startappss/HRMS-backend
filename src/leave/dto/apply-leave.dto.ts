@@ -1,12 +1,58 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+// import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+
+// export class ApplyLeaveDto {
+//   @IsNotEmpty()
+//   @IsString()
+//   startDate: Date;
+
+//   @IsOptional()
+//   @IsString()
+//   endDate: Date;
+
+//   @IsNotEmpty()
+//   @IsString()
+//   reason: string;
+
+//   @IsNotEmpty()
+//   @IsString()
+//   dayType: string;
+
+//   @IsNotEmpty()
+//   @IsString()
+//   leaveType: string;
+
+//   @IsNotEmpty()
+//   @IsString()
+//   status: string;
+
+//   @IsOptional()
+//   @IsNumber()
+//   noOfDays: number;
+
+//   @IsOptional()
+//   @IsString()
+//   approvedBy: string;
+
+//   @IsOptional()
+//   @IsNumber()
+//   paidDays: number;
+
+//   @IsNumber()
+//   @IsOptional()
+//   unpaidDays: number;
+// }
+
+
+
+import { IsDateString, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class ApplyLeaveDto {
   @IsNotEmpty()
-  @IsString()
+  @IsDateString()
   startDate: Date;
 
   @IsOptional()
-  @IsString()
+  @IsDateString()
   endDate: Date;
 
   @IsNotEmpty()
@@ -14,14 +60,14 @@ export class ApplyLeaveDto {
   reason: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsIn(['fullday', 'halfday'])
   dayType: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsIn(['sick', 'casual', 'work']) 
   leaveType: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   status: string;
 
@@ -37,7 +83,7 @@ export class ApplyLeaveDto {
   @IsNumber()
   paidDays: number;
 
-  @IsNumber()
   @IsOptional()
+  @IsNumber()
   unpaidDays: number;
 }

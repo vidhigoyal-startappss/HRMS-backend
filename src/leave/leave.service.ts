@@ -3,29 +3,29 @@ import {
   ForbiddenException,
   BadRequestException,
   NotFoundException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Leave, LeaveDocument } from './schemas/leave.schema';
-import { User, UserDocument } from '../auth/schemas/user.schema';
-import mongoose from 'mongoose';
-import { NotificationService } from 'src/notification/notification.service';
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { Leave, LeaveDocument } from "./schemas/leave.schema";
+import { User, UserDocument } from "../auth/schemas/user.schema";
+import mongoose from "mongoose";
+import { NotificationService } from "src/notification/notification.service";
 
 @Injectable()
 export class LeaveService {
   constructor(
     @InjectModel(Leave.name) private leaveModel: Model<LeaveDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private readonly notificationService: NotificationService,
+    private readonly notificationService: NotificationService
   ) {}
 
   // 🧠 Utility to calculate working leave days
   private calculateLeaveDays(
     startDate: Date,
     endDate: Date,
-    dayType: string,
+    dayType: string
   ): number {
-    if (dayType?.toLowerCase() === 'halfday') return 0.5;
+    if (dayType?.toLowerCase() === "halfday") return 0.5;
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -45,72 +45,79 @@ export class LeaveService {
 
   // 📝 Apply for a new leave
 
-async applyLeave(
-  user: { userId: string; name: string; customPermissions: Record<string, string[]> },
-  data: any,
-) 
+  async applyLeave(
+    user: {
+      userId: string;
+      name: string;
+      customPermissions: Record<string, string[]>;
+    },
+    data: any
+  ) {
+    // console.log(user)
+    // if (!user.customPermissions['leaves']?.includes('write')) {
+    //   throw new ForbiddenException('You do not have permission to apply for leave');
+    // }
 
-{
-  // console.log(user)
-  // if (!user.customPermissions['leaves']?.includes('write')) {
-  //   throw new ForbiddenException('You do not have permission to apply for leave');
-  // }
+    const { startDate, endDate, dayType, leaveType } = data;
 
-  const { startDate, endDate, dayType } = data;
+    const overlappingLeave = await this.leaveModel.findOne({
+      userId: user.userId,
+      $or: [
+        {
+          startDate: { $lte: endDate },
+          endDate: { $gte: startDate },
+        },
+      ],
+    });
 
-  const overlappingLeave = await this.leaveModel.findOne({
-    userId: user.userId,
-    $or: [
-      {
-        startDate: { $lte: endDate },
-        endDate: { $gte: startDate },
-      },
-    ],
-  });
+    if (overlappingLeave) {
+      throw new BadRequestException(
+        "You already have a leave request for this date range"
+      );
+    }
 
-  if (overlappingLeave) {
-    throw new BadRequestException('You already have a leave request for this date range');
+    let noOfDays = 1;
+
+    if (data.leaveType !== "work") {
+      noOfDays = this.calculateLeaveDays(startDate, endDate, dayType);
+    }
+
+    const leave = new this.leaveModel({
+      ...data,
+      endDate: dayType === "halfday" ? null : endDate,
+      noOfDays,
+      userId: user.userId,
+      status: "Pending",
+    });
+
+    const savedLeave = await leave.save(); // ✅ await needed
+
+    // ✅ Notify HR/Admin after successful save
+    await this.notificationService.notifyRoles(["HR", "Admin"], {
+      title: "New Leave Request",
+      message: `${user.name} has submitted a leave request from ${startDate} to ${endDate}.`,
+      type: "action",
+      relatedModule: "Leave",
+    });
+
+    return savedLeave;
   }
-
-  const noOfDays = this.calculateLeaveDays(startDate, endDate, dayType);
-
-  const leave = new this.leaveModel({
-    ...data,
-    endDate: dayType === 'halfday' ? null : endDate,
-    noOfDays,
-    userId: user.userId,
-    status: 'Pending',
-  });
-
-  const savedLeave = await leave.save(); // ✅ await needed
-
-  // ✅ Notify HR/Admin after successful save
-  await this.notificationService.notifyRoles(['HR', 'Admin'], {
-    title: 'New Leave Request',
-    message: `${user.name} has submitted a leave request from ${startDate} to ${endDate}.`,
-    type: 'action',
-    relatedModule: 'Leave',
-  });
-
-  return savedLeave;
-}
-
 
   // 📄 Fetch all or personal leaves
   async fetchLeaves(user: {
     userId: string;
     customPermissions: Record<string, string[]>;
   }) {
-    if (!user.customPermissions['leaves']?.includes('read')) {
-      throw new ForbiddenException('You do not have permission to view leaves');
+    if (!user.customPermissions["leaves"]?.includes("read")) {
+      throw new ForbiddenException("You do not have permission to view leaves");
     }
 
     // 🔐 Admin/HR view all
-    if (user.customPermissions['leaves'].includes('readAll')) {
+    if (user.customPermissions["leaves"].includes("readAll")) {
       return this.leaveModel
         .find()
-        .populate('userId', 'firstName lastName email')
-        .populate('approvedBy', 'firstName lastName email')
+        .populate("userId", "firstName lastName email")
+        .populate("approvedBy", "firstName lastName email")
         .sort({ createdAt: -1 })
         .exec();
     }
@@ -119,96 +126,96 @@ async applyLeave(
     return this.leaveModel
       .find({ userId: user.userId })
       .populate([
-        { path: 'approvedBy', select: 'firstName lastName' },
-        { path: 'userId', select: 'firstName lastName leaves' },
+        { path: "approvedBy", select: "firstName lastName" },
+        { path: "userId", select: "firstName lastName leaves" },
       ])
       .sort({ createdAt: -1 })
       .exec();
   }
-async updateLeaveStatus(
-  user: { userId: string; customPermissions: Record<string, string[]> },
-  id: string,
-  status: string,
-) {
-  const validStatuses = ['Pending', 'Approved', 'Rejected'];
-  if (!validStatuses.includes(status)) {
-    throw new BadRequestException(
-      `Invalid status. Allowed values are: ${validStatuses.join(', ')}`,
-    );
-  }
-
-  if (!user.customPermissions['leaves']?.includes('update')) {
-    throw new ForbiddenException(
-      'You do not have permission to update leave status',
-    );
-  }
-
-  const leave = await this.leaveModel.findById(id);
-  if (!leave) {
-    throw new NotFoundException('Leave request not found');
-  }
-
-  let noOfDays = leave?.noOfDays;
-  let paidDays = 0;
-  let unpaidDays = 0;
-
-  if (status === 'Approved' && leave.status !== 'Approved') {
-    const userDoc = await this.userModel.findById(leave.userId);
-    if (!userDoc) {
-      throw new NotFoundException('User not found');
+  async updateLeaveStatus(
+    user: { userId: string; customPermissions: Record<string, string[]> },
+    id: string,
+    status: string
+  ) {
+    const validStatuses = ["Pending", "Approved", "Rejected"];
+    if (!validStatuses.includes(status)) {
+      throw new BadRequestException(
+        `Invalid status. Allowed values are: ${validStatuses.join(", ")}`
+      );
     }
 
-    noOfDays = this.calculateLeaveDays(leave.startDate, leave.endDate, leave.dayType);
-    const currentPlLeft = userDoc.leaves?.plLeft ?? 0;
-    paidDays = Math.min(noOfDays, currentPlLeft);
-    unpaidDays = noOfDays - paidDays;
+    if (!user.customPermissions["leaves"]?.includes("update")) {
+      throw new ForbiddenException(
+        "You do not have permission to update leave status"
+      );
+    }
 
-    await this.userModel.updateOne(
-      { _id: leave.userId },
-      { $set: { 'leaves.plLeft': currentPlLeft - paidDays } },
+    const leave = await this.leaveModel.findById(id);
+    if (!leave) {
+      throw new NotFoundException("Leave request not found");
+    }
+
+    let noOfDays = leave?.noOfDays;
+    let paidDays = 0;
+    let unpaidDays = 0;
+
+    if (status === "Approved" && leave.status !== "Approved") {
+      const userDoc = await this.userModel.findById(leave.userId);
+      if (!userDoc) {
+        throw new NotFoundException("User not found");
+      }
+
+      if (leave.leaveType === "work") {
+        paidDays = 0;
+        unpaidDays = 0;
+      } else {
+        const currentPlLeft = userDoc.leaves?.plLeft ?? 0;
+        paidDays = Math.min(noOfDays, currentPlLeft);
+        unpaidDays = noOfDays - paidDays;
+
+        await this.userModel.updateOne(
+          { _id: leave.userId },
+          { $set: { "leaves.plLeft": currentPlLeft - paidDays } }
+        );
+      }
+
+      leave.set({
+        status: "Approved",
+        noOfDays,
+        paidDays,
+        unpaidDays,
+        approvedBy: new mongoose.Types.ObjectId(user.userId),
+      });
+    } else {
+      leave.status = status;
+    }
+
+    await leave.save();
+
+    // ✅ Send notifications
+    const employee = await this.userModel.findById(leave.userId);
+    const employeeName =
+      employee?.firstName + " " + employee?.lastName || "an employee";
+
+    // 1️⃣ Notification to the employee
+    await this.notificationService.create({
+      recipient: new mongoose.Types.ObjectId(leave.userId),
+      title: `Leave ${status}`,
+      message: `Your leave request from ${leave.startDate.toDateString()} to ${leave.endDate.toDateString()} has been ${status.toLowerCase()}.`,
+      type: "Leave",
+    });
+
+    // 2️⃣ Notification to other HR and Admin users (excluding the acting user)
+    await this.notificationService.notifyRoles(
+      ["HR", "Admin"],
+      {
+        title: `Leave ${status} for ${employeeName}`,
+        message: `Leave request for ${employeeName} from ${leave.startDate.toDateString()} to ${leave.endDate.toDateString()} was ${status.toLowerCase()} by another admin.`,
+        type: "Leave",
+      },
+      user.userId // exclude current actor
     );
 
-    leave.set({
-      status: 'Approved',
-      noOfDays,
-      paidDays,
-      unpaidDays,
-      approvedBy: new mongoose.Types.ObjectId(user.userId),
-    });
-  } else {
-    leave.status = status;
+    return leave;
   }
-
-  await leave.save();
-
-  // ✅ Send notifications
-  const employee = await this.userModel.findById(leave.userId);
-  const employeeName = employee?.firstName + " " + employee?.lastName|| 'an employee';
-
-  // 1️⃣ Notification to the employee
-  await this.notificationService.create({
-    recipient: new mongoose.Types.ObjectId(leave.userId),
-    title: `Leave ${status}`,
-    message: `Your leave request from ${leave.startDate.toDateString()} to ${leave.endDate.toDateString()} has been ${status.toLowerCase()}.`,
-    type: 'Leave',
-
-  });
-
-  // 2️⃣ Notification to other HR and Admin users (excluding the acting user)
-  await this.notificationService.notifyRoles(
-    ['HR', 'Admin'],
-    {
-      title: `Leave ${status} for ${employeeName}`,
-      message: `Leave request for ${employeeName} from ${leave.startDate.toDateString()} to ${leave.endDate.toDateString()} was ${status.toLowerCase()} by another admin.`,
-      type: 'Leave',
-    
-    },
-    user.userId, // exclude current actor
-  );
-
-  return leave;
-}
-
-
-
 }

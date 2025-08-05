@@ -22,7 +22,7 @@ export class Leave {
 
   @Prop({
     default: 'casual',
-    enum: ['sick', 'casual'],
+   enum: ['sick', 'casual', 'work'], 
   })
   leaveType: string;
 
