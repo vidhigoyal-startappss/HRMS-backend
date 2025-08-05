@@ -26,6 +26,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:3001',
       'https://hrms-frontend-oaun.onrender.com',
+        'https://hrms-frontend-5hcc.onrender.com',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
