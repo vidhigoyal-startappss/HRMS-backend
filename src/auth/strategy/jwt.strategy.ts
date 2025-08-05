@@ -37,9 +37,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     userId: user._id,
     email: user.email,
     role: user.role,
-    firstName: user.firstName,     // ✅ Add this
-    lastName: user.lastName,       // ✅ And this
-    name: `${user.firstName} ${user.lastName}`, // Optional: Keep name if needed
+    firstName: user.firstName,     
+    lastName: user.lastName,      
+    name: `${user.firstName} ${user.lastName}`,
     customPermissions: user.customPermissions || {},
   };
 }

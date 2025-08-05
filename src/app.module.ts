@@ -9,21 +9,19 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { PayrollModule } from './payroll/payroll.module';
 import { EventsModule} from './events/events.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
-    // Load environment variables globally and validate them
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        MONGO_URI: Joi.string().uri().required(), // MongoDB connection string
-        JWT_SECRET: Joi.string().required(), // Secure JWT secret
-        PORT: Joi.number().default(3000), // Default server port
-        CORS_ORIGIN: Joi.string().uri().default('http://localhost:3001'), // CORS origin
+        MONGO_URI: Joi.string().uri().required(), 
+        JWT_SECRET: Joi.string().required(), 
+        PORT: Joi.number().default(3000), 
+        CORS_ORIGIN: Joi.string().uri().default('http://localhost:3001'),
       }),
     }),
-
-    // Asynchronous MongoDB connection using Mongoose
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -34,14 +32,14 @@ import { MulterModule } from '@nestjs/platform-express';
     MulterModule.register({
       dest: './uploads',
     }),
-
-    // Import feature modules
     AuthModule,
     LeaveModule,
     ManageUsersModule,
     AttendanceModule,
     PayrollModule,
     EventsModule,
+    ScheduleModule.forRoot(),
+
   ],
 })
 export class AppModule {}

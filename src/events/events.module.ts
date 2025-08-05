@@ -8,7 +8,6 @@ import { User, UserSchema } from '../auth/schemas/user.schema';
 @Module({
   imports: [
     MongooseModule.forFeature([
-      // { name: Event.name, schema: EventSchema },
       { name: User.name, schema: UserSchema },
     ]),
   ],

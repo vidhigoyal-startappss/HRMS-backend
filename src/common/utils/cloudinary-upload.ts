@@ -1,4 +1,3 @@
-// src/common/utils/cloudinary-upload.ts
 import { v2 as cloudinary } from 'cloudinary';
 import { Readable } from 'stream';
 import * as dotenv from 'dotenv';

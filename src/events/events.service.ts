@@ -15,8 +15,8 @@ export class EventsService {
 
     if (type === 'birthday') {
       const users = await this.userModel.find({
-        // isDeleted: false,
-        // dob: { $exists: true, $ne: null },
+        isDeleted: false,
+        dob: { $exists: true, $ne: null },
       });
 
       const birthdays = users.filter((user) => {
