@@ -46,6 +46,16 @@ async markAsRead(notificationId: string) {
     return { modifiedCount: result.modifiedCount };
   }
 
+    async deleteNotification(notificationId: string) {
+    const deleted = await this.notificationModel.findByIdAndDelete(notificationId);
+    if (!deleted) {
+      throw new NotFoundException('Notification not found');
+    }
+    return { message: 'Notification deleted successfully' };
+  }
+
+
+
 
 async notifyRoles(
   roles: string[],
