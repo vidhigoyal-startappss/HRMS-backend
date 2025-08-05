@@ -18,7 +18,7 @@ export class AttendanceService {
     private readonly attendanceModel: Model<AttendanceDocument>,
   ) {}
 
-  // ✅ 1. Check-In
+ 
   async checkIn(user: JwtPayload, dto: CheckInDto) {
   const todayStart = dayjs().startOf('day').toDate();
 
