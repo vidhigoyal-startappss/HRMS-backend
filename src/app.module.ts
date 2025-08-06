@@ -9,7 +9,7 @@ import { AttendanceModule } from './attendance/attendance.module';
 import { PayrollModule } from './payroll/payroll.module';
 import { EventsModule} from './events/events.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { ScheduleModule } from '@nestjs/schedule';
+import { ScheduleModule } from "@nestjs/schedule";
 
 @Module({
   imports: [

@@ -13,10 +13,11 @@ async function bootstrap() {
   const port = parseInt(process.env.PORT || '3000', 10);
 
     const config = new DocumentBuilder()
-        .setTitle('My API')
+        .setTitle('Startappss HRMS')
         .setDescription('API documentation')
         .setVersion('1.0')
-        .addTag('example')
+        .addTag('User')
+        .addBearerAuth()
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
@@ -27,7 +28,7 @@ async function bootstrap() {
       'http://localhost:3001',
       'https://hrms-frontend-oaun.onrender.com',
         'https://hrms-frontend-5hcc.onrender.com',
-        'https://hrms-startapps-3gm5.vercel.app',
+        'https://hrms-startapps-3gm5.vercel.app'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
