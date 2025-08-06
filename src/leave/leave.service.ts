@@ -13,8 +13,6 @@ import { NotificationService } from "src/notification/notification.service";
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Logger } from '@nestjs/common';
 import { Types } from "mongoose";
-
-
 @Injectable()
 export class LeaveService {
    private readonly logger = new Logger(LeaveService.name);
