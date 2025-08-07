@@ -38,6 +38,8 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiOkResponse,ApiCreatedResponse,ApiParam 
 } from "@nestjs/swagger";
 
 @ApiBearerAuth()
@@ -54,6 +56,11 @@ export class AuthController {
     return { isFirst };
   }
 
+  @ApiCreatedResponse({
+    description:"User Creation Successfull",
+    type:RegisterDto 
+  })
+  @ApiBody({type:RegisterDto ,description :"user login schema should look like this"})
   @Post("register")
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
@@ -61,7 +68,10 @@ export class AuthController {
     return this.authService.register(registerDto, req.user?.userId);
   }
 
+
+  //@ApiResponse({ status: 201, description: "User Profile successfully created" })
   @Post("complete-profile/:userId")
+  @ApiParam({name : "userId" ,type:String,description:"id of user"})
   @UseGuards(JwtAuthGuard)
   @HttpCode(201)
   async updateCompleteProfile(
@@ -73,12 +83,18 @@ export class AuthController {
     return this.authService.updateCompleteProfile(targetUserId, dto);
   }
 
+   @ApiCreatedResponse({
+    description:"User login Successfull",
+    type:LoginDto
+  })
   @Post("login")
   @HttpCode(200)
+  @ApiBody({type:LoginDto ,description :"user login schema should look like this"})
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
 
+ // @ApiResponse()
   @Get("me")
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
@@ -93,6 +109,7 @@ export class AuthController {
     };
   }
 
+  //@ApiResponse({ status: 200, description: "Get Employee by id" })
   @UseGuards(JwtAuthGuard, RolesGuard, SelfOrRoleGuard)
   @Roles("Employee", "HR", "Admin", "SuperAdmin")
   @Get("employee/:id")
@@ -101,6 +118,7 @@ export class AuthController {
     return this.authService.findEmployeeById(id);
   }
 
+  //@ApiResponse()
   @Post("upload-profile/:userId")
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
@@ -147,6 +165,7 @@ export class AuthController {
     };
   }
 
+  //@ApiResponse()
   @UseGuards(JwtAuthGuard, RolesGuard, SelfOrRoleGuard)
   @Roles("Employee", "HR", "Admin", "SuperAdmin")
   @Patch("employee/:id")
@@ -156,7 +175,6 @@ export class AuthController {
   ) {
     return this.authService.updateProfile(userId, updateUserDto);
   }
-
   @UseGuards(JwtAuthGuard, RolesGuard, SelfOrRoleGuard)
   @Roles("HR", "Admin", "SuperAdmin")
   @Get("employees")
@@ -166,21 +184,32 @@ export class AuthController {
     return this.authService.findEmployeesOnly(userRole, showDeleted);
   }
 
+
   @Get("profile-image/:id")
   async getProfileImage(@Param("id") id: string) {
     const imageUrl = await this.authService.getProfileImage(id);
     return { imageUrl };
   }
 
+  @ApiCreatedResponse({
+    description:"reset link shared successfully",
+    type:ForgotPasswordDto
+  })
   @Post("forgot-password")
   async forgotPassword(@Body() body: ForgotPasswordDto) {
     return this.authService.sendResetPasswordLink(body.email);
-  }
-
+  } 
+  
+  
+  
+  
   @Post("reset-password")
   async resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto.token, dto.newPassword);
   }
+
+
+
   @Post("change-password")
   async changePassword(@Body() dto: ChangePasswordDto) {
     return this.authService.changePassword(

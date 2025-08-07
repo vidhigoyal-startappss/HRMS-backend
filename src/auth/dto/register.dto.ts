@@ -8,17 +8,21 @@ import {
   IsObject,
   IsMongoId
 } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterDto {
+  @ApiProperty({ description :"Email Id is required",example:"user@gmail.com"})
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
+  @ApiProperty({ description :"Password is required",example:"password"})
   @IsString()
   @IsNotEmpty()
   @MinLength(6, { message: 'Password must be at least 6 characters long' })
   password: string;
 
+  @ApiProperty({ description :"Role is required",example:"role"})
   @IsString()
   @IsNotEmpty()
   @IsIn(['SuperAdmin', 'Admin', 'Manager', 'HR', 'Employee'], {
