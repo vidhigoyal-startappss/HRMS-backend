@@ -8,37 +8,38 @@ import {
   Delete,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto } from './dto/notification.dto';
-
+import { CreateNotificationDto ,notificationUserResponse,deleteNotificationResponse,markAllResponse} from './dto/notification.dto';
+import { ApiBody,ApiParam,ApiCreatedResponse,ApiOkResponse } from '@nestjs/swagger';
 @Controller('notifications')
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
-  // Create a notification
+  @ApiBody({type:CreateNotificationDto})
+  @ApiCreatedResponse({type:CreateNotificationDto})
   @Post()
   create(@Body() dto: CreateNotificationDto) {
     return this.notificationService.create(dto);
   }
 
-  // ✅ Fetch all notifications for a user
+  @ApiOkResponse({type:notificationUserResponse})
   @Get(':userId')
   getUserNotifications(@Param('userId') userId: string) {
     return this.notificationService.getUserNotifications(userId);
   }
-
-  // Mark a single notification as read
+    
+  @ApiOkResponse({type:notificationUserResponse})
   @Patch('read/:id')
   markAsRead(@Param('id') id: string) {
     return this.notificationService.markAsRead(id);
   }
 
-  // Mark all notifications for a user as read
+  @ApiOkResponse({type:markAllResponse})
   @Patch(':userId/read-all')
   markAllAsRead(@Param('userId') userId: string) {
     return this.notificationService.markAllAsRead(userId);
   }
 
-  // Delete a notification
+  @ApiOkResponse({type:deleteNotificationResponse})
   @Delete(':id')
   deleteNotification(@Param('id') id: string) {
     return this.notificationService.deleteNotification(id);

@@ -20,16 +20,19 @@ import { uploadToCloudinary } from "src/common/utils/cloudinary-upload";
 import * as sharp from "sharp";
 import { memoryStorage } from "multer";
 import { AuthService } from "./auth.service";
-import { RegisterDto } from "./dto/register.dto";
-import { LoginDto } from "./dto/login.dto";
+import { RegisterDto,RegisterResponse } from "./dto/register.dto";
+import { LoginDto, LoginResponse,MyResponse,getAllEmployeesResponse, getEmployee,userDeleteResponse,checkFirstUserResponse,FileUploadDTO,FileUploadResponse } from "./dto/login.dto";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
-import { UpdateCompleteProfileDto } from "./dto/update-complete-profile.dto";
+import { UpdateCompleteProfileDto, UpdateCompleteResponse } from "./dto/update-complete-profile.dto";
 import { Express } from "express";
 import { Roles } from "./decorators/roles.decorator";
 import { RolesGuard } from "./guards/roles.guard";
 import {
+  ChangePasswordResponse,
   ForgotPasswordDto,
+  ForgotPasswordResponse,
   ResetPasswordDto,
+  ResetPasswordResponse,
 } from "./dto/forgot-reset-password.dto";
 import { SelfOrRoleGuard } from "./guards/self-or-role.guard";
 import { ChangePasswordDto } from "./dto/forgot-reset-password.dto";
@@ -39,7 +42,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiBody,
-  ApiOkResponse,ApiCreatedResponse,ApiParam 
+  ApiOkResponse,ApiCreatedResponse,ApiParam ,ApiConsumes
 } from "@nestjs/swagger";
 
 @ApiBearerAuth()
@@ -50,7 +53,8 @@ export class AuthController {
 
   @Get("first-user-check")
   @ApiOperation({ summary: "this is for check" })
-  @ApiResponse({ status: 200, description: "Success" })
+  @ApiResponse({ status: 200, description: "Success" ,type:checkFirstUserResponse })
+
   async isFirstUser(): Promise<{ isFirst: boolean }> {
     const isFirst = await this.authService.isFirstUser();
     return { isFirst };
@@ -58,7 +62,7 @@ export class AuthController {
 
   @ApiCreatedResponse({
     description:"User Creation Successfull",
-    type:RegisterDto 
+    type:RegisterResponse 
   })
   @ApiBody({type:RegisterDto ,description :"user login schema should look like this"})
   @Post("register")
@@ -83,9 +87,9 @@ export class AuthController {
     return this.authService.updateCompleteProfile(targetUserId, dto);
   }
 
-   @ApiCreatedResponse({
+   @ApiOkResponse({
     description:"User login Successfull",
-    type:LoginDto
+    type:LoginResponse
   })
   @Post("login")
   @HttpCode(200)
@@ -94,7 +98,10 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
- // @ApiResponse()
+  @ApiOkResponse({
+    description:"My User Data",
+    type:MyResponse
+  })
   @Get("me")
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
@@ -110,17 +117,24 @@ export class AuthController {
   }
 
   //@ApiResponse({ status: 200, description: "Get Employee by id" })
+   @ApiOkResponse({
+    description:"Get employee by Id",
+    type:getEmployee
+  })
   @UseGuards(JwtAuthGuard, RolesGuard, SelfOrRoleGuard)
   @Roles("Employee", "HR", "Admin", "SuperAdmin")
   @Get("employee/:id")
+  @ApiParam({name:'id',type:String})
   @HttpCode(200)
   async getEmployeeById(@Param("id") id: string) {
     return this.authService.findEmployeeById(id);
   }
 
-  //@ApiResponse()
   @Post("upload-profile/:userId")
+  @ApiConsumes('multipart/form-data')
   @UseGuards(JwtAuthGuard)
+  @ApiBody({type:FileUploadDTO})
+  @ApiCreatedResponse({type:FileUploadResponse})
   @UseInterceptors(
     FileInterceptor("file", {
       storage: memoryStorage(),
@@ -166,6 +180,13 @@ export class AuthController {
   }
 
   //@ApiResponse()
+  @ApiCreatedResponse({
+    description:"Update Employee by Id or Update the self details",
+    type:UpdateCompleteResponse
+  })
+   @ApiBody({
+    type:UpdateCompleteProfileDto
+  })
   @UseGuards(JwtAuthGuard, RolesGuard, SelfOrRoleGuard)
   @Roles("Employee", "HR", "Admin", "SuperAdmin")
   @Patch("employee/:id")
@@ -175,6 +196,11 @@ export class AuthController {
   ) {
     return this.authService.updateProfile(userId, updateUserDto);
   }
+
+   @ApiOkResponse({
+    description:"Get all employees",
+    type:getAllEmployeesResponse
+  })
   @UseGuards(JwtAuthGuard, RolesGuard, SelfOrRoleGuard)
   @Roles("HR", "Admin", "SuperAdmin")
   @Get("employees")
@@ -186,6 +212,8 @@ export class AuthController {
 
 
   @Get("profile-image/:id")
+  @ApiParam({name:"id"})
+  @ApiOkResponse({type:FileUploadResponse})
   async getProfileImage(@Param("id") id: string) {
     const imageUrl = await this.authService.getProfileImage(id);
     return { imageUrl };
@@ -193,6 +221,10 @@ export class AuthController {
 
   @ApiCreatedResponse({
     description:"reset link shared successfully",
+    type:ForgotPasswordResponse,
+  })
+
+  @ApiBody({
     type:ForgotPasswordDto
   })
   @Post("forgot-password")
@@ -201,15 +233,25 @@ export class AuthController {
   } 
   
   
-  
-  
+   @ApiCreatedResponse({
+    description:"passsword reset successfully",
+    type:ResetPasswordResponse
+  })
+   @ApiBody({
+    type:ResetPasswordDto
+  })
   @Post("reset-password")
   async resetPassword(@Body() dto: ResetPasswordDto) {
     return this.authService.resetPassword(dto.token, dto.newPassword);
   }
 
-
-
+ @ApiCreatedResponse({
+    description:"Change Password successfully Done",
+    type:ChangePasswordResponse
+  })
+   @ApiBody({
+    type:ChangePasswordDto
+  })
   @Post("change-password")
   async changePassword(@Body() dto: ChangePasswordDto) {
     return this.authService.changePassword(
@@ -218,6 +260,10 @@ export class AuthController {
       dto.oldPassword,
     );
   }
+
+
+  @ApiOkResponse({type:userDeleteResponse})
+  @ApiParam({name:"id"})
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("SuperAdmin")
   @Delete("delete/:id")
