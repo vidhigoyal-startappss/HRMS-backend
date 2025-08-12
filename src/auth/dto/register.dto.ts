@@ -36,3 +36,22 @@ export class RegisterDto {
   customPermissions?: Record<string, string[]>;
 
 }
+
+export class RegisterResponse {
+
+  @ApiProperty()
+  message:string;
+
+  @ApiProperty()
+  userId : string;
+
+  @ApiProperty()
+  role : string;
+
+  @ApiProperty()
+  createdBy : string;
+
+  @ApiProperty()
+  employeeId : string;
+
+}

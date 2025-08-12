@@ -6,7 +6,7 @@ export type AttendanceDocument = Attendance & Document;
 @Schema({ timestamps: true })
 export class Attendance {
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId; // ✅ Now it's a proper reference
+  userId: Types.ObjectId; 
   @Prop()
   firstName: string;
 
@@ -23,8 +23,7 @@ export class Attendance {
   checkOutTime: Date;
 
   @Prop()
-  totalHours: string; // e.g. "8h 45m"
-
+  totalHours: string; 
   @Prop()
   location: string;
 
@@ -32,7 +31,7 @@ export class Attendance {
   checkedOut: boolean;
 
   @Prop({ default: false })
-  leave: boolean; // optional field in case of leave marking
+  leave: boolean; 
 }
 
 export const AttendanceSchema = SchemaFactory.createForClass(Attendance);

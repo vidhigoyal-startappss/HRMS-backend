@@ -9,41 +9,41 @@ import { ApiProperty } from '@nestjs/swagger';
 export class BankDetailsDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty( {description:"Bank Name is required",example:"sbi"})
+  @ApiProperty()
   bankName: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty( {description:"Bank Name is required",example:"sbi"})
+  @ApiProperty()
   accountNumber: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty( {description:"Bank Name is required",example:"sbi"})
+  @ApiProperty()
 
   ifscCode: string;
 
   @IsString()
   @IsOptional()
-  @ApiProperty( {description:"Bank Name is required",example:"sbi"})
+  @ApiProperty()
 
   branchName: string;
 
   @IsString()
   @IsOptional()
-  @ApiProperty( {description:"Bank Name is required",example:"sbi"})
+  @ApiProperty()
 
   accountHolderName: string;
 
   @IsString()
   @IsOptional()
-  @ApiProperty( {description:"Bank Name is required",example:"sbi"})
+  @ApiProperty()
 
   adharNumber: string;
 
   @IsString()
   @IsOptional()
-  @ApiProperty( {description:"Bank Name is required",example:"sbi"})
+  @ApiProperty()
 
   panNumber: string;
 }

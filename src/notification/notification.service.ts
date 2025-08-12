@@ -30,7 +30,7 @@ async markAsRead(notificationId: string) {
     const updated = await this.notificationModel.findByIdAndUpdate(
       notificationId,
       { isRead: true },
-      { new: true }, // Return updated doc
+      { new: true }, 
     );
     if (!updated) {
       throw new NotFoundException('Notification not found');
@@ -60,7 +60,7 @@ async markAsRead(notificationId: string) {
 async notifyRoles(
   roles: string[],
   payload: Omit<CreateNotificationDto, 'recipient'>,
-  excludeUserId?: string, // optional parameter to exclude actor
+  excludeUserId?: string, 
 ) {
   const filter: any = { role: { $in: roles } };
 

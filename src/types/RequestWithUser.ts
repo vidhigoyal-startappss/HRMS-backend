@@ -1,4 +1,3 @@
-// src/types/RequestWithUser.ts
 import { Request } from 'express';
 import { JwtPayload } from '../auth/strategy/jwt-payload.interface';
 
