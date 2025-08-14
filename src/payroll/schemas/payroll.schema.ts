@@ -10,7 +10,7 @@ export class Payroll {
   employeeId: string;
 
   @Prop({ required: true })
-  month: string; // Format: YYYY-MM
+  month: string;
 
   @Prop({ required: true })
   basicSalary: number;

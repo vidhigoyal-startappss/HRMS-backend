@@ -16,7 +16,7 @@ export class Leave {
 
   @Prop({
     default: 'fullday',
-    enum: ['fullday', 'halfday'],
+    enum: ['fullday', 'halfday','compensatory'],
   })
   dayType: string;
 
