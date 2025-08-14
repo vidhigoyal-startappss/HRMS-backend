@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { Document } from "mongoose";
 
 export type UserDocument = User & Document;
 
@@ -23,17 +23,22 @@ export class User {
   password: string;
 
   @Prop({
-    default: 'Employee',
-    enum: ['SuperAdmin', 'Admin', 'Manager', 'HR', 'Employee'],
+    default: "Employee",
+    enum: ["SuperAdmin", "Admin", "Manager", "HR", "Employee"],
   })
   role: string;
 
   @Prop({ unique: true, required: true })
   employeeId: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false, default: null })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: false,
+    default: null,
+  })
   createdBy: mongoose.Types.ObjectId | null;
-  
+
   @Prop({
     type: Object,
     default: {},
@@ -82,8 +87,23 @@ export class User {
   @Prop()
   employmentType: string;
 
+  @Prop()
+  emergencyContactPersonName: string;
+
+  @Prop()
+  emergencyContactEmail: string;
+
+  @Prop()
+  currentAddress: string;
+
+  @Prop()
+  permanentAddress: string;
+
+  // @Prop()
+  // CTC: string;
+
   @Prop({ type: String, default: null })
-  profileImage: string; 
+  profileImage: string;
   // Education
   @Prop()
   qualification: string;
