@@ -8,7 +8,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { CreateNotificationDto ,notificationUserResponse,deleteNotificationResponse,markAllResponse} from './dto/notification.dto';
+import { CreateNotificationDto ,notificationUserResponse,deleteNotificationResponse,markAllResponse } from './dto/notification.dto';
 import { ApiBody,ApiParam,ApiCreatedResponse,ApiOkResponse } from '@nestjs/swagger';
 @Controller('notifications')
 export class NotificationController {

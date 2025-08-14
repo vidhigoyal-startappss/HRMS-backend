@@ -9,8 +9,13 @@ export class ApplyLeaveDto {
 
   @IsOptional()
   @IsDateString()
-    @ApiProperty()
+  @ApiProperty()
   endDate: Date;
+
+  @IsOptional()
+  @IsDateString()
+  @ApiProperty()
+  leavingTime:Date;
 
   @IsNotEmpty()
   @IsString()
@@ -18,8 +23,8 @@ export class ApplyLeaveDto {
   reason: string;
 
   @IsNotEmpty()
-    @ApiProperty()
-  @IsIn(['fullday', 'halfday'])
+  @ApiProperty()
+  @IsIn(['fullday', 'halfday','compensatory'])
   dayType: string;
 
   @IsNotEmpty()
@@ -88,6 +93,9 @@ export class LeaveResponse {
   leaveType:string;
 
   @ApiProperty()
+  leavingTime:string;
+
+  @ApiProperty()
   noOfDays:string;
 
   @ApiProperty()
@@ -134,6 +142,8 @@ export class updateResponse {
   @ApiProperty()
   leaveType:string
   @ApiProperty()
+  leavingTime:string
+  @ApiProperty()
   noOfDays:number
   @ApiProperty()
   paidDays:number
@@ -168,6 +178,8 @@ export class applyLeaveResponse {
   @ApiProperty()
   dayType:string;
 
+  @ApiProperty()
+  leavingTime:string;
 
   @ApiProperty()
   leaveType:string;
