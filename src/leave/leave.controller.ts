@@ -29,9 +29,14 @@ export class LeaveController {
     return this.leaveService.applyLeave(req.user, body);
   }
 
+  
+
+
+
+
   // employee will get all his leaves
    @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('HR', 'Admin', 'SuperAdmin')
+  @Roles('HR', 'Admin', 'SuperAdmin' , 'Employee')
   @ApiOkResponse({type:LeaveResponse})
   @Get()
 

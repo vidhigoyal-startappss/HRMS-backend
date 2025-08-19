@@ -123,8 +123,8 @@ export class BasicDetailsDto {
   @IsOptional()
   permanentAddress: string;
 
-  // @IsString()
-  // @ApiProperty()
-  // @IsNotEmpty()
-  // CTC: string;
+  @IsString()
+  @ApiProperty()
+  @IsNotEmpty()
+  ctc: string;
 }

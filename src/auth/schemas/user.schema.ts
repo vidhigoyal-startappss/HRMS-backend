@@ -15,12 +15,25 @@ class UserLeaves {
 const UserLeavesSchema = SchemaFactory.createForClass(UserLeaves);
 
 @Schema()
+export class Sequence {
+  @Prop({ required: true, unique: true })
+  collectionName: string;
+
+  @Prop({ required: true })
+  value: number;
+}
+export const SequenceSchema = SchemaFactory.createForClass(Sequence);
+
+@Schema()
 export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
   @Prop({ required: true })
   password: string;
+
+  //  @Prop({ required: true , unique: true })
+  //   employeeId: string;
 
   @Prop({
     default: "Employee",
@@ -99,8 +112,8 @@ export class User {
   @Prop()
   permanentAddress: string;
 
-  // @Prop()
-  // CTC: string;
+  @Prop()
+  ctc: string;
 
   @Prop({ type: String, default: null })
   profileImage: string;
