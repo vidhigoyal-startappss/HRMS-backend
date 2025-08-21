@@ -1,8 +1,8 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { Document } from "mongoose";
 @Schema({ timestamps: true })
 export class Leave {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User", required: true })
   userId: mongoose.Types.ObjectId;
 
   @Prop({ required: true })
@@ -15,16 +15,18 @@ export class Leave {
   reason: string;
 
   @Prop({
-    default: 'fullday',
-    enum: ['fullday', 'halfday'],
+    default: "casual",
+    enum: ["casual", "sick", "work"],
+    required: true,
   })
-  dayType: string;
+  leaveType: "casual" | "sick" | "work";
 
   @Prop({
-    default: 'casual',
-   enum: ['sick', 'casual', 'work'], 
+    default: "fullday",
+    enum: ["fullday", "halfday", "compensatory"],
+    required: true,
   })
-  leaveType: string;
+  dayType: "fullday" | "halfday" | "compensatory";
 
   @Prop()
   noOfDays: number;
@@ -35,10 +37,10 @@ export class Leave {
   @Prop()
   unpaidDays: number;
 
-  @Prop({ default: 'Pending', enum: ['Pending', 'Approved', 'Rejected'] })
+  @Prop({ default: "Pending", enum: ["Pending", "Approved", "Rejected"] })
   status: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User", required: false })
   approvedBy: mongoose.Types.ObjectId;
 }
 
