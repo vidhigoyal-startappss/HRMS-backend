@@ -1,8 +1,8 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose, { Document } from "mongoose";
 @Schema({ timestamps: true })
 export class Leave {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User", required: true })
   userId: mongoose.Types.ObjectId;
 
   @Prop({ required: true })
@@ -22,7 +22,7 @@ export class Leave {
 
   @Prop({
     default: 'casual',
-   enum: ['sick', 'casual', 'work'], 
+   enum: ['sick', 'casual', 'work'],
   })
   leaveType: string;
 

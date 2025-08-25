@@ -10,11 +10,12 @@ import { User, UserSchema } from './schemas/user.schema';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { ForgotPasswordDto } from './dto/forgot-reset-password.dto';
 import { ResetPasswordDto } from './dto/forgot-reset-password.dto';
-
+import {Sequence , SequenceSchema } from './schemas/user.schema';
 @Module({
   imports: [
     ConfigModule,
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+       MongooseModule.forFeature([{ name: Sequence.name, schema: SequenceSchema }]),
     PassportModule,
     EmailModule,
     JwtModule.registerAsync({
