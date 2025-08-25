@@ -8,7 +8,6 @@ export class ManageUsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
   private hasPermission(user: { customPermissions?: Record<string, string[]> }, permission: string): boolean {
-    // Check if user has the required permission on the 'users' resource
     return user.customPermissions?.['users']?.includes(permission) ?? false;
   }
 

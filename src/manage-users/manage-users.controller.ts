@@ -9,7 +9,6 @@ export class ManageUsersController {
 
   @Post()
   async createUser(@Req() req, @Body() body: any) {
-    // req.user is expected to have customPermissions & role properties
     return this.manageUsersService.createUser(req.user, body);
   }
 

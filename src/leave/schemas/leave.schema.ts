@@ -15,18 +15,16 @@ export class Leave {
   reason: string;
 
   @Prop({
-    default: "casual",
-    enum: ["casual", "sick", "work"],
-    required: true,
+    default: 'fullday',
+    enum: ['fullday', 'halfday','compensatory'],
   })
-  leaveType: "casual" | "sick" | "work";
+  dayType: string;
 
   @Prop({
-    default: "fullday",
-    enum: ["fullday", "halfday", "compensatory"],
-    required: true,
+    default: 'casual',
+   enum: ['sick', 'casual', 'work'],
   })
-  dayType: "fullday" | "halfday" | "compensatory";
+  leaveType: string;
 
   @Prop()
   noOfDays: number;
@@ -37,10 +35,10 @@ export class Leave {
   @Prop()
   unpaidDays: number;
 
-  @Prop({ default: "Pending", enum: ["Pending", "Approved", "Rejected"] })
+  @Prop({ default: 'Pending', enum: ['Pending', 'Approved', 'Rejected'] })
   status: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User", required: false })
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false })
   approvedBy: mongoose.Types.ObjectId;
 }
 
