@@ -69,8 +69,6 @@ export class LeaveService {
       );
     }
 
-    
-
     const noOfDays =
       dayType?.toLowerCase() === "halfday"
         ? 0.5
@@ -119,7 +117,6 @@ export class LeaveService {
       .sort({ createdAt: -1 })
       .exec();
   }
-
 
   async updateLeaveStatus(
     user: { userId: string; customPermissions: Record<string, string[]> },
@@ -186,14 +183,18 @@ export class LeaveService {
     await this.notificationService.create({
       recipient: new mongoose.Types.ObjectId(leave.userId),
       title: `Leave ${status}`,
-      message: `Your leave request from ${leave.startDate.toDateString()} to ${leave.endDate.toDateString()} has been ${status.toLowerCase()}.`,
+      message: `Your leave request from ${leave.startDate ? leave.startDate.toDateString() : "N/A"} to ${leave.endDate ? leave.endDate.toDateString() : "N/A"} has been ${status.toLowerCase()}.`,
       type: "Leave",
     });
     await this.notificationService.notifyRoles(
       ["HR", "Admin"],
       {
         title: `Leave ${status} for ${employeeName}`,
-        message: `Leave request for ${employeeName} from ${leave.startDate.toDateString()} to ${leave.endDate.toDateString()} was ${status.toLowerCase()} by another admin.`,
+        message: `Leave request for ${employeeName} from ${
+          leave.startDate ? leave.startDate.toDateString() : "N/A"
+        } to ${
+          leave.endDate ? leave.endDate.toDateString() : "N/A"
+        } was ${status.toLowerCase()} by another admin.`,
         type: "Leave",
       },
       user.userId

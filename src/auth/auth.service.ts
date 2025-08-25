@@ -192,9 +192,9 @@ export class AuthService {
     return this.userModel.find(baseQuery);
   }
 
-  async findEmployeeById(userId: string) {
+  async findEmployeeById(userId: string , includeArchived  = false) {
     const user = await this.userModel.findById(userId);
-    if (!user || user.isDeleted) {
+    if (!user || (user.isDeleted && !includeArchived)) {
       throw new NotFoundException("User not found or deleted");
     }
     return user;
