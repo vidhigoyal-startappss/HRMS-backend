@@ -9,7 +9,7 @@ import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import * as bcrypt from "bcrypt";
 import { JwtService } from "@nestjs/jwt";
-import { User, UserDocument } from "./schemas/user.schema";
+import { Sequence, User, UserDocument } from "./schemas/user.schema";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { UpdateCompleteProfileDto } from "./dto/update-complete-profile.dto";
@@ -21,6 +21,7 @@ import { EmailService } from "src/mail/mail.service";
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Sequence.name) private sequenceModal: Model<Sequence>,
     // @InjectModel(DeleteRequest.name) private deleteRequestModel: Model<DeleteRequestDocument>,
     private jwtService: JwtService,
     private emailService: EmailService
@@ -29,6 +30,21 @@ export class AuthService {
   async isFirstUser(): Promise<boolean> {
     const count = await this.userModel.countDocuments();
     return count === 0;
+  }
+
+  async genrateEmployeeid(): Promise<string> {
+    const sequence = await this.sequenceModal.findOneAndUpdate(
+      { collectionName: "user" },
+      { $inc: { value: 1 } },
+      { new: true, upsert: true }
+    );
+
+    if (!sequence) {
+      throw new Error("XYZ!");
+    }
+
+    const uniqueEmployeeId = `EMP${sequence.value}${Math.floor(Math.random() * 10000)}`;
+    return uniqueEmployeeId;
   }
 
   async register(registerDto: RegisterDto, creatorId?: string) {
@@ -53,8 +69,8 @@ export class AuthService {
       customPermissions = PERMISSIONS[role] || {};
     }
 
-    const employeeId = `EMP${Date.now()}${Math.floor(Math.random() * 10000)}`;
-
+    // const employeeId = `EMP${Date.now()}${Math.floor(Math.random() * 10000)}`;
+    const employeeId = await this.genrateEmployeeid();
     const createdUser = new this.userModel({
       email: registerDto.email,
       password: hashedPassword,
@@ -178,9 +194,9 @@ export class AuthService {
     return this.userModel.find(baseQuery);
   }
 
-  async findEmployeeById(userId: string) {
+  async findEmployeeById(userId: string , includeArchived  = false) {
     const user = await this.userModel.findById(userId);
-    if (!user || user.isDeleted) {
+    if (!user || (user.isDeleted && !includeArchived)) {
       throw new NotFoundException("User not found or deleted");
     }
     return user;
@@ -319,4 +335,5 @@ export class AuthService {
   //   await newRequest.save();
   //   return { message: 'Delete request submitted for approval' };
   // }
+ 
 }

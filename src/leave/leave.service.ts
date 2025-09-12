@@ -10,17 +10,16 @@ import { Leave, LeaveDocument } from "./schemas/leave.schema";
 import { User, UserDocument } from "../auth/schemas/user.schema";
 import mongoose from "mongoose";
 import { NotificationService } from "src/notification/notification.service";
-import { Cron, CronExpression } from '@nestjs/schedule';
-import { Logger } from '@nestjs/common';
+import { Cron, CronExpression } from "@nestjs/schedule";
+import { Logger } from "@nestjs/common";
 import { Types } from "mongoose";
 @Injectable()
 export class LeaveService {
-   private readonly logger = new Logger(LeaveService.name);
+  private readonly logger = new Logger(LeaveService.name);
   constructor(
     @InjectModel(Leave.name) private leaveModel: Model<LeaveDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private readonly notificationService: NotificationService,
-   
+    private readonly notificationService: NotificationService
   ) {}
   private calculateLeaveDays(
     startDate: Date,
@@ -35,7 +34,7 @@ export class LeaveService {
     const current = new Date(start);
 
     while (current <= end) {
-      const day = current.getDay(); 
+      const day = current.getDay();
       if (day !== 0 && day !== 6) {
         count++;
       }
@@ -70,11 +69,10 @@ export class LeaveService {
       );
     }
 
-    let noOfDays = 1;
-
-    if (data.leaveType !== "work") {
-      noOfDays = this.calculateLeaveDays(startDate, endDate, dayType);
-    }
+    const noOfDays =
+      dayType?.toLowerCase() === "halfday"
+        ? 0.5
+        : this.calculateLeaveDays(startDate, endDate, dayType);
 
     const leave = new this.leaveModel({
       ...data,
@@ -84,7 +82,7 @@ export class LeaveService {
       status: "Pending",
     });
 
-    const savedLeave = await leave.save(); 
+    const savedLeave = await leave.save();
     await this.notificationService.notifyRoles(["HR", "Admin"], {
       title: "New Leave Request",
       message: `${user.name} has submitted a leave request from ${startDate} to ${endDate}.`,
@@ -94,7 +92,6 @@ export class LeaveService {
 
     return savedLeave;
   }
-
 
   async fetchLeaves(user: {
     userId: string;
@@ -120,6 +117,7 @@ export class LeaveService {
       .sort({ createdAt: -1 })
       .exec();
   }
+z
   async updateLeaveStatus(
     user: { userId: string; customPermissions: Record<string, string[]> },
     id: string,
@@ -180,18 +178,23 @@ export class LeaveService {
 
     await leave.save();
     const employee = await this.userModel.findById(leave.userId);
-    const employeeName = employee?.firstName + " " + employee?.lastName || "an employee";
+    const employeeName =
+      employee?.firstName + " " + employee?.lastName || "an employee";
     await this.notificationService.create({
       recipient: new mongoose.Types.ObjectId(leave.userId),
       title: `Leave ${status}`,
-      message: `Your leave request from ${leave.startDate.toDateString()} to ${leave.endDate.toDateString()} has been ${status.toLowerCase()}.`,
+      message: `Your leave request from ${leave.startDate ? leave.startDate.toDateString() : "N/A"} to ${leave.endDate ? leave.endDate.toDateString() : "N/A"} has been ${status.toLowerCase()}.`,
       type: "Leave",
     });
     await this.notificationService.notifyRoles(
       ["HR", "Admin"],
       {
         title: `Leave ${status} for ${employeeName}`,
-        message: `Leave request for ${employeeName} from ${leave.startDate.toDateString()} to ${leave.endDate.toDateString()} was ${status.toLowerCase()} by another admin.`,
+        message: `Leave request for ${employeeName} from ${
+          leave.startDate ? leave.startDate.toDateString() : "N/A"
+        } to ${
+          leave.endDate ? leave.endDate.toDateString() : "N/A"
+        } was ${status.toLowerCase()} by another admin.`,
         type: "Leave",
       },
       user.userId
@@ -201,34 +204,35 @@ export class LeaveService {
   }
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   async creditMonthlyLeaves() {
-    this.logger.log('Running Monthly Leave Credit Cron');
+    this.logger.log("Running Monthly Leave Credit Cron");
 
     try {
-      const users = await this.userModel.find({ role: 'Employee' }); 
-      const monthlyCredit = 2; 
+      const users = await this.userModel.find({ role: "Employee" });
+      const monthlyCredit = 1.5;
       const maxCarryForward = 30;
 
       for (const user of users) {
         const currentPlLeft = user.leaves?.plLeft ?? 0;
-        const updatedBalance = Math.min(currentPlLeft + monthlyCredit, maxCarryForward);
+        const updatedBalance = Math.min(
+          currentPlLeft + monthlyCredit,
+          maxCarryForward
+        );
 
         await this.userModel.updateOne(
           { _id: user._id },
-          { $set: { 'leaves.plLeft': updatedBalance } }
+          { $set: { "leaves.plLeft": updatedBalance } }
         );
         await this.notificationService.create({
-          recipient: user._id as Types.ObjectId, 
-          title: 'Monthly Leave Credit',
+          recipient: user._id as Types.ObjectId,
+          title: "Monthly Leave Credit",
           message: `${monthlyCredit} paid leaves credited. New balance: ${updatedBalance}.`,
-          type: 'Leave',
+          type: "Leave",
         });
       }
 
-      this.logger.log('Monthly Leave Credit Completed Successfully');
+      this.logger.log("Monthly Leave Credit Completed Successfully");
     } catch (error) {
-      this.logger.error('Monthly Leave Credit Cron Failed', error);
+      this.logger.error("Monthly Leave Credit Cron Failed", error);
     }
   }
-    
-    
 }

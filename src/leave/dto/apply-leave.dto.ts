@@ -1,5 +1,12 @@
-import { IsDateString, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsDateString,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class ApplyLeaveDto {
   @IsNotEmpty()
@@ -12,24 +19,19 @@ export class ApplyLeaveDto {
   @ApiProperty()
   endDate: Date;
 
-  @IsOptional()
-  @IsDateString()
-  @ApiProperty()
-  leavingTime:Date;
-
   @IsNotEmpty()
   @IsString()
-    @ApiProperty()
+  @ApiProperty()
   reason: string;
 
   @IsNotEmpty()
   @ApiProperty()
-  @IsIn(['fullday', 'halfday','compensatory'])
+  @IsIn(["fullday", "halfday"])
   dayType: string;
 
   @IsNotEmpty()
   @ApiProperty()
-  @IsIn(['sick', 'casual', 'work']) 
+  @IsIn(["sick", "casual", "work"])
   leaveType: string;
 
   @IsOptional()
@@ -53,146 +55,130 @@ export class ApplyLeaveDto {
   unpaidDays: number;
 }
 
-
 export class userIdResponse {
   @ApiProperty()
-  id:string
+  id: string;
 
   @ApiProperty()
-  email:string
+  email: string;
 
   @ApiProperty()
-  firstName:string
+  firstName: string;
 
   @ApiProperty()
-  lastName :string
+  lastName: string;
 }
 
-
 export class LeaveResponse {
- 
   @ApiProperty()
-  id:string;
+  id: string;
 
   @ApiProperty()
-  userId:userIdResponse;
+  userId: userIdResponse;
 
   @ApiProperty()
-  startDate:string;
+  startDate: string;
 
   @ApiProperty()
-  endDate:string;
+  endDate: string;
 
   @ApiProperty()
-  reason :string;
+  reason: string;
 
   @ApiProperty()
-  dayType:string;
+  dayType: string;
 
   @ApiProperty()
-  leaveType:string;
+  leaveType: string;
 
   @ApiProperty()
-  leavingTime:string;
+  noOfDays: string;
 
   @ApiProperty()
-  noOfDays:string;
+  status: string;
 
   @ApiProperty()
-  status:string;
+  createdAt: string;
 
   @ApiProperty()
-  createdAt:string;
+  updatedAt: string;
 
   @ApiProperty()
-  updatedAt:string;
+  v: number;
 
   @ApiProperty()
-  v:number;
+  approvedBy: userIdResponse;
 
   @ApiProperty()
-  approvedBy:userIdResponse;
+  paidDays: number;
 
   @ApiProperty()
-  paidDays:number;
-
-  @ApiProperty()
-  unpaidDays:number;
-
+  unpaidDays: number;
 }
 
 export class updateStatusDTO {
-
   @ApiProperty()
-  status:string
-
+  status: string;
 }
 
 export class updateResponse {
   @ApiProperty()
-  userId:string
+  userId: string;
   @ApiProperty()
-  startDate:string
+  startDate: string;
   @ApiProperty()
-  endDate:string
+  endDate: string;
   @ApiProperty()
-  reason:string
+  reason: string;
   @ApiProperty()
-  dayType:string
+  dayType: string;
   @ApiProperty()
-  leaveType:string
+  leaveType: string;
   @ApiProperty()
-  leavingTime:string
+  noOfDays: number;
   @ApiProperty()
-  noOfDays:number
+  paidDays: number;
   @ApiProperty()
-  paidDays:number
+  unpaidDays: number;
   @ApiProperty()
-  unpaidDays:number
+  approvedBy: string;
   @ApiProperty()
-  approvedBy:string
+  status: string;
   @ApiProperty()
-  status:string
+  id: string;
   @ApiProperty()
-  id:string
+  createdAt: string;
   @ApiProperty()
-  createdAt:string
-  @ApiProperty()
-  updatedAt:string
+  updatedAt: string;
 }
 
 export class applyLeaveResponse {
+  @ApiProperty()
+  userId: string;
 
   @ApiProperty()
-  userId:string;
+  startDate: string;
 
   @ApiProperty()
-  startDate:string;
+  endDate: string;
 
   @ApiProperty()
-  endDate:string;
+  reason: string;
 
   @ApiProperty()
-  reason:string;
+  dayType: string;
 
   @ApiProperty()
-  dayType:string;
+  leaveType: string;
 
   @ApiProperty()
-  leavingTime:string;
-
+  noOfDays: number;
   @ApiProperty()
-  leaveType:string;
-
+  status: string;
   @ApiProperty()
-  noOfDays:number;
+  id: string;
   @ApiProperty()
-  status:string;
+  createdAt: string;
   @ApiProperty()
-  id:string;
-  @ApiProperty()
-  createdAt:string;
-  @ApiProperty()
-  updated:string;
- 
+  updated: string;
 }

@@ -7,10 +7,10 @@ import { updateResponse } from "src/leave/dto/apply-leave.dto";
 @Injectable()
 export class PrometheusService {
   private readonly register: client.Registry;
-  private readonly httpRequestCounter: client.Counter<string>;
-  private readonly cpuUsageGauge: client.Gauge<string>;
-  private readonly memoryUsageGauge: client.Gauge<string>;
-  private readonly networkUsageCounter: client.Counter<string>;
+  private readonly httpRequestCounter: client.Counter;
+  private readonly cpuUsageGauge: client.Gauge;
+  private readonly memoryUsageGauge: client.Gauge;
+  private readonly networkUsageCounter: client.Counter;
 
   constructor() {
     this.register = new client.Registry();
@@ -71,8 +71,8 @@ export class PrometheusService {
   }
 
 
-  getMetrics(): Promise<string> {
-    return this.register.metrics();
+  async getMetrics(): Promise<string> {
+    return await this.register.metrics();
   }
 
   getContentType(): string {

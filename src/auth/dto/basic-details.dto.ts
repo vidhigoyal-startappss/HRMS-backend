@@ -7,9 +7,9 @@ import {
   IsNumber,
   IsDefined,
   ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
+} from "class-validator";
+import { Type } from "class-transformer";
+import { ApiProperty } from "@nestjs/swagger";
 export class LeavesDto {
   @IsNumber()
   @ApiProperty()
@@ -26,7 +26,6 @@ export class BasicDetailsDto {
   @IsString()
   @ApiProperty()
   @IsNotEmpty()
-
   firstName: string;
 
   @IsString()
@@ -35,75 +34,97 @@ export class BasicDetailsDto {
   lastName: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsNotEmpty()
   phone: string;
 
   @IsDateString()
-   @ApiProperty()
+  @ApiProperty()
   @IsNotEmpty()
   dob: Date;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsNotEmpty()
   gender: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   address?: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   city?: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   state?: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   zipCode?: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   country?: string;
 
   @IsDateString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   joiningDate?: Date;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   designation?: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   department?: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   profileImage?: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsOptional()
   employmentType?: string;
 
   // @IsDefined()
   // @ValidateNested()
-  // @Type(() => LeavesDto) 
+  // @Type(() => LeavesDto)
   // // leaves: LeavesDto;
 
+  @IsString()
+  @ApiProperty()
+  @IsNotEmpty()
+  emergencyContactPersonName: string;
+
+  @IsString()
+  @ApiProperty()
+  @IsOptional()
+  emergencyContactEmail: string;
+
+  @IsString()
+  @ApiProperty()
+  @IsOptional()
+  currentAddress: string;
+
+  @IsString()
+  @ApiProperty()
+  @IsOptional()
+  permanentAddress: string;
+
+  @IsString()
+  @ApiProperty()
+  @IsNotEmpty()
+  ctc: string;
 }
-
-

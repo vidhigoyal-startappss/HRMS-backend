@@ -126,8 +126,9 @@ export class AuthController {
   @Get("employee/:id")
   @ApiParam({name:'id',type:String})
   @HttpCode(200)
-  async getEmployeeById(@Param("id") id: string) {
-    return this.authService.findEmployeeById(id);
+  async getEmployeeById(@Param("id") id: string, @Query('archived') archived: string ) {
+    const includeArchived = archived === 'true';
+    return this.authService.findEmployeeById(id , includeArchived);
   }
 
   @Post("upload-profile/:userId")
