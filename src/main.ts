@@ -29,7 +29,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      "http://localhost:3001",
+      "http://localhost:3002",
       "https://hrms-frontend-oaun.onrender.com",
       "https://hrms-frontend-5hcc.onrender.com",
       "https://hrms-startapps-3gm5.vercel.app",

@@ -57,7 +57,6 @@ export class User {
     default: {},
   })
   customPermissions: Record<string, string[]>;
-  // Personal Details
   @Prop()
   firstName: string;
 
@@ -117,7 +116,7 @@ export class User {
 
   @Prop({ type: String, default: null })
   profileImage: string;
-  // Education
+
   @Prop()
   qualification: string;
 
@@ -129,8 +128,6 @@ export class User {
 
   @Prop()
   grade: string;
-
-  // Bank Details
   @Prop()
   bankName: string;
 

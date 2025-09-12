@@ -124,6 +124,7 @@ export class AuthService {
       customPermissions: user.customPermissions,
       employeeId: user.employeeId,
       name: user.firstName + " " + user.lastName,
+      profileImage:user.profileImage
     };
 
     return {
@@ -135,6 +136,7 @@ export class AuthService {
         customPermissions: PERMISSIONS[user.role],
         employeeId: user.employeeId,
         name: user.firstName + " " + user.lastName,
+        profileImage:user.profileImage
       },
     };
   }

@@ -14,7 +14,7 @@ import { AuthModule } from '../auth/auth.module';
     MongooseModule.forFeature([
       { name: Attendance.name, schema: AttendanceSchema },
     ]),
-    AuthModule, // This will provide UserService or AuthService
+    AuthModule,
   ],
   controllers: [AttendanceController],
   providers: [AttendanceService],

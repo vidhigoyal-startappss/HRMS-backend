@@ -2,7 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
-  ForbiddenException, // ✅ Added this line
+  ForbiddenException, 
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Attendance, AttendanceDocument } from './schemas/attendance.schema';
@@ -35,7 +35,6 @@ export class AttendanceService {
     }
   }
 
-  // ✅ Create new check-in only if no record exists for today
   return this.attendanceModel.create({
     userId: user.userId,
     firstName: user.firstName,
@@ -47,8 +46,6 @@ export class AttendanceService {
   });
 }
 
-
-  // ✅ 2. Check-Out
   async checkOut(user: JwtPayload) {
     const todayStart = dayjs().startOf('day').toDate();
 
@@ -65,8 +62,6 @@ export class AttendanceService {
     const now = new Date();
     entry.checkOutTime = now;
     entry.checkedOut = true;
-
-    // ✅ Calculate total hours
     const diffMs = now.getTime() - new Date(entry.checkInTime).getTime();
     const hours = Math.floor(diffMs / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs / (1000 * 60)) % 60);
@@ -75,7 +70,6 @@ export class AttendanceService {
     return entry.save();
   }
 
-  // ✅ 3. Get today's attendance (used for timer resume)
   async getTodayAttendance(user: JwtPayload) {
     const todayStart = dayjs().startOf('day').toDate();
 
@@ -84,16 +78,12 @@ export class AttendanceService {
       checkInTime: { $gte: todayStart },
     });
   }
-
-  // ✅ 4. Get full history
  async getMyAttendance(user: JwtPayload) {
   return this.attendanceModel
     .find({ userId: user.userId })
     .sort({ checkInTime: -1 });
 }
 
-
-  // ✅ 5. Admin: Today’s all user attendance
   async getTodayHistory(user: JwtPayload) {
   const todayStart = dayjs().startOf('day').toDate();
   const todayEnd = dayjs().endOf('day').toDate();
@@ -113,8 +103,8 @@ export class AttendanceService {
   return {
     _id: rec._id,
     checkInTime: rec.checkInTime,
-    checkOutTime: rec.checkOutTime || null,   // ✅ Add this
-    totalHours: rec.totalHours || null,       // ✅ Optional
+    checkOutTime: rec.checkOutTime || null,   
+    totalHours: rec.totalHours || null,       
     checkedOut: rec.checkedOut,
     location: rec.location,
     user: {
@@ -128,7 +118,6 @@ export class AttendanceService {
 }
 
 
-  // ✅ 6. Explicit - get today's attendance for self
   async getMyTodayAttendance(user: JwtPayload) {
     const todayStart = dayjs().startOf('day').toDate();
 
