@@ -71,8 +71,8 @@ export class PrometheusService {
   }
 
 
-  getMetrics(): string {
-    return this.register.metrics();
+  async getMetrics(): Promise<string> {
+    return await this.register.metrics();
   }
 
   getContentType(): string {

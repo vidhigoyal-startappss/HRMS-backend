@@ -67,5 +67,5 @@ export class LeaveController {
     @Body("status") status: string
   ) {
     return this.leaveService.updateLeaveStatus(req.user, id, status);
-  }
+  }z
 }

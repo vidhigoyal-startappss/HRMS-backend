@@ -117,7 +117,7 @@ export class LeaveService {
       .sort({ createdAt: -1 })
       .exec();
   }
-
+z
   async updateLeaveStatus(
     user: { userId: string; customPermissions: Record<string, string[]> },
     id: string,
@@ -208,7 +208,7 @@ export class LeaveService {
 
     try {
       const users = await this.userModel.find({ role: "Employee" });
-      const monthlyCredit = 2;
+      const monthlyCredit = 1.5;
       const maxCarryForward = 30;
 
       for (const user of users) {
