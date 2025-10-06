@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { Payroll, PayrollDocument } from "./schemas/payroll.schema";
 import { CreatePayrollDto } from "./dto/create-payroll.dto";
 import { uploadPdfToCloudinary } from "../common/utils/uploadPdfToCloudinary";
+import { HttpException, HttpStatus } from "@nestjs/common";
 
 @Injectable()
 export class PayrollService {
@@ -58,7 +59,7 @@ export class PayrollService {
     const payroll = await this.payrollModel.findById(id).exec();
 
     if (!payroll) {
-      throw new Error("Payroll record not found");
+      throw new HttpException("Payroll record not found", HttpStatus.NOT_FOUND);
     }
     if (
       payroll.employeeId !== user.userId &&
@@ -74,7 +75,10 @@ export class PayrollService {
     const payroll = await this.payrollModel.findOne({ employeeId });
 
     if (!payroll) {
-      throw new Error("No payroll data found for this employee");
+      throw new HttpException(
+        "No payroll data found for this employee",
+        HttpStatus.NOT_FOUND
+      );
     }
 
     return {
