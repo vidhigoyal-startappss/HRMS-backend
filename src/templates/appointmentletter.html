@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Appointment Letter - PDF Print</title>
+<style>
+@page {
+    size: A4;
+    margin: 0;
+}
+body {
+    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+    background: #fff;
+    color: #111;
+    font-size: 15px;
+    margin: 0;
+}
+.pdf-header, .pdf-footer {
+    position: fixed;
+    left: 0; 
+    right: 0;
+    width: 100vw;
+    z-index: 1000;
+    margin: 0; 
+    padding: 0;
+}
+.pdf-header {
+    top: 0;
+    height: auto;
+}
+.pdf-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw; 
+  /* background: #fff; */
+  z-index: 1000;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 11px;
+}
+
+.footer-bar {
+    /* background: #f5f5f5; */
+    /* position: fixed;
+    bottom: 100px;
+    left: 900px;  */
+  /* background-color: red; */
+  /* padding: 3px 32px 0 32px; */
+  /* margin-top: auto; */
+  display: flex;
+  /* flex-wrap: wrap; */
+  flex-direction: column;
+  /* justify-content: space-between; */
+  align-items: flex-end;
+  /* min-height: 28px; */
+  /* border-top: 1.5px solid #ddd; */
+  /* color: #444; */
+  /* background: transparent; */
+  /* z-index: 20; */
+  position: absolute;
+  bottom: 40px;
+  left: 400px;
+  width: 50%;
+  padding: 0 32px;
+  box-sizing: border-box;
+
+}
+
+.footer-address {
+  flex: 1 1 auto;
+  color: #444;
+  margin-bottom: 5px;
+}
+
+.footer-contact {
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin-top: 6px;
+  gap: 60px;
+}
+
+.footer-contact-item{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+.footer-contact a {
+    /* color: #0073e6; */
+    color: #444;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+.footer-icon {
+    display: flex;
+    flex-wrap: wrap;
+    width: 12px;
+  height: 12px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.pdf-header img, .footer-banner {
+    width: 100vw;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    margin: 0; padding: 0;
+    /* background-color: transparent; */
+}
+
+.pdf-watermark{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 400px;
+    height: 400px;
+    transform: translate(-50%,-50%);
+    opacity: 0.1;
+    z-index: 0;
+    pointer-events: none;
+    background:url('./watermark.png')no-repeat center;
+    background-size: contain;
+}
+
+.pdf-content {
+    margin-top: 220px;
+    padding: 0 35px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+.page-break {
+    page-break-before: always;
+}
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    font-size: 13px;
+}
+th, td { 
+    border: 1px solid #bbb; 
+    padding: 6px 8px; 
+    text-align: left;
+}
+th { 
+    background: #f2f2f2; 
+    font-weight: bold;
+}
+h2, h3, h4, h5 { 
+    margin-top: 25px; 
+    margin-bottom: 15px;
+}
+.signature { 
+    margin-top: 30px;}
+.signature-nihal{
+    height: 40px;
+    margin-left: 60px;
+}
+@media print {
+    .no-print { display: none !important; }
+    body { background: #fff; }
+}
+</style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="pdf-header">
+        <img src="https://i.postimg.cc/9MKxRL4k/photo-2025-09-17-12-47-14.jpg" alt="Header" />
+    </div>
+    <div class="pdf-watermark">
+        <!-- <img src="./WhatsApp Image 2025-02-26 at 5.06.48 PM (1).png" alt=""> -->
+    </div>
+    <!-- Content -->
+    <div class="pdf-content">
+        <!-- Page 1 -->
+        <div>
+           <div style="text-align:right;"><b>Date: {{currentDate}}</b></div>
+           <h2 style="text-align:center; text-decoration:underline;">Appointment Letter</h2>
+            <p><strong>Dear {{fullName}},</strong></p>
+                <p>
+                    Thank you for exploring career opportunities with us, and it is our pleasure to welcome you to
+                    <strong>Startappss Systems India Pvt Ltd </strong>(“Startappss” or “Company”). You have successfully
+                    completed our initial selection process, and we are pleased to make you an offer. We believe
+                    your skills and experience are an excellent match for our Company.</strong>.
+                    <br><br>
+                    You have been selected for the position of <strong>{{designation}}</strong>. Your employment
+                    will be effective from your date of joining, which shall be on or before <strong>{{joiningDate}}</strong>.
+                </p>
+                <h3>Under the terms of this offer:</h3>
+                <p>
+                    Your employment with Startappss is deemed to be confirmed after <strong>3 (three) months</strong> of your
+                    joining unless communicated otherwise within the said period. This confirmation is subject to
+                    satisfactory performance of the services expected of you.<br><br>
+                    Your <strong>Annual Cost-to-Company (CTC)</strong> will be <strong>INR {{ctc}} ({{ctcInWords}})</strong>. Please
+                    refer to <strong>Annexure-I</strong> for details on the compensation and statutory deductions.<br><br>
+                    Your <strong>work location</strong> will be <strong>Indore/Noida</strong>, and for business reasons, it will be mapped to our
+                    branch office at:
+                </p>
+                <p>
+                    <strong>Startappss Systems India Pvt Ltd</strong><br>
+                    93, Heera Bagh Colony, Scheme 78,<br>
+                    Near Dewas Naka, Indore – 452010.
+                </p>
+                <p>
+                    However, you may be required to work at any other location as per business requirements, and
+                    the Company also reserves the right to change the position for which you are being hired and/or
+                    your duties. From time to time, you may also be required to work remotely depending on
+                    business needs or government directives.
+                </p>
+                <p>
+                   You will be issued a Policy letter with all (i) terms & conditions of employment at the time of
+                    your joining or earlier upon acceptance of this offer, and (ii) the terms and conditions set forth  
+                    in the
+                </p>
+                <!-- Signature
+                <div class="signature">
+                    <p>Your Sincerely,</p>
+                    <p>For <b>Startappss Systems Private Limited (Authorized – HR Department) </b></p>
+                </div> -->
+        </div>
+        <div class="page-break"></div>
+        <!-- Page 2 -->
+        <div class="pdf-content">
+                <p>
+                    <strong>Service Rules of the Company</strong>, as amended from time to time. You are required to complete
+                    the pre-joining formalities as per the Company Policy before the Date of Joining.
+                    <br><br>
+                    As per the Company’s leave policy, you will be entitled to <strong>18 (Eighteen)</strong> days of paid leave per
+                    year, which includes casual leave, medical leave, and other applicable leave categories, subject
+                    to Company rules.<br><br>
+                    As an employee of the Company, you will have access to certain confidential information, and
+                    you may, during your employment, develop certain information or inventions, which will
+                    become the property of the Company, its affiliates, customers, or partners. You will be required
+                    to sign the Company’s <strong>Letter of Appointment</strong> and a <strong>Non-Disclosure Agreement</strong> as a
+                    condition of employment on the day of joining.<br><br>
+                    Please note that we do not expect you to bring any confidential or proprietary information from
+                    your previous employer(s) or violate any existing obligations. You represent that you are not
+                    subject to any restrictions preventing you from working with <strong>Startappss</strong>.<br><br>
+                </p>
+                <p>
+                    As per the laws of India, an employee who has been appointed by a company on a full-time
+                    basis is restricted from working simultaneously with other companies. This means you are
+                    legally barred from taking dual employment at the same time. If you wish to pursue any
+                    temporary or part-time jobs, whether commercial or non-commercial,<strong> prior written
+                    permission from Startappss</strong> is mandatory, citing the hours and nature of work. Any act of
+                    dual employment without such written consent will be treated as misconduct and may lead to
+                    disciplinary action under Company Policy.<br><br>
+                    This offer of employment is subject to the following conditions:
+                    <ol type="a">
+                        <li>You being found medically fit pursuant to the medical check-up to be carried out at a
+                            Company-approved hospital/clinic.</li>
+                        <li>The Company being entitled to conduct background checks, either directly or through an
+                            external agency, and you expressly granting permission to do so.</li>
+                        <li>All information and data furnished by you to the Company, based on which this offer of
+                            employment is made, being found true and correct.</li>
+                    </ol>
+                    <br><br>
+                    It gives us great pleasure to invite you to join the Startappss family. We will be delighted to
+                    have you as part of our growing organization and as a key contributor to the success of
+                    Startappss Systems India Pvt Ltd.
+
+                </p>
+                <!-- Signature
+                <div class="signature">
+                    <p>Your Sincerely,</p>
+                    <p>For <b>Startappss Systems Private Limited (Authorized – HR Department) </b></p>
+                </div> -->
+        </div>
+        <div class="page-break"></div>
+        <!-- Page 3 -->
+        <div class="pdf-content">
+                <p>
+                    Please confirm your acceptance of this offer within <strong>3 days</strong> of receiving this letter, after which
+                    the offer will be considered withdrawn without further notice. You are expected to produce,
+                    before joining.<br><br>
+                    Your signature below will acknowledge that you have read, understood, and agreed to the
+                    terms and conditions of this offer.<br><br>
+                    For any further clarifications, please reach out to our HR Team at:<br>
+                    Email - hr@startappss.com | Contact - +91 9238920590
+                </p>
+                <p>
+                    Your Sincerely,
+                </p>
+                <!-- Signature -->
+                <div class="signature">
+                    <p><b>For Startappss Systems Private Limited(Authorized- HR-Department)</b></p>
+                </div>
+                <!-- Authorized Signature Space -->
+                <div style="font-size: 14px; text-align: left;">
+                    <img src="https://i.postimg.cc/8Ps3Crjv/Offer-Letter-Saket-Bagdi-1-4-1-1.png" alt="Nihal Jaiswal's signature" class="signature-nihal"><br>
+                    <p><strong>Authorized Signature</strong></p>
+                </div>
+
+        </div>
+        <div class="page-break"></div>
+        <!-- Page 4 -->
+        <div class="pdf-content">
+            <main class="letter-content">
+                <h2>ANNEXURE-I: COMPENSATION PACKAGE</h2>
+                <p>
+                    Your Compensation Package, on CTC (Cost to Company) basis, shall be INR {{ctc}}
+                    per annum, as detailed below:
+                </p>
+                <h4 style="margin-top: 5px;">Gross Components</h4>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 2px; font-size: 12px;">
+                <thead>
+    <tr style="background-color: #f2f2f2;">
+        <th style="border: 1px solid #bbb; padding: 4px 6px; text-align: left;">Component Name</th>
+        <th style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;">Nature of Component</th>
+        <th style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;">Monthly (INR)</th>
+        <th style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;">Yearly(INR)</th>
+    </tr>
+</thead>
+<tbody>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 6px 8px;">Basic</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">Fixed</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{basicFixedMonthly}}</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{basicFixedYearly}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 6px 8px;">HRA</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">Fixed</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{hraFixedMonthly}}</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{hraFixedYearly}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 6px 8px;">Conveyance</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">Fixed</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{conveyanceMonthly}}</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{conveyanceYearly}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 6px 8px;">Dearness Allowance</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">-</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{dearnessAllowancesMonthly}}</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{dearnessAllowancesYearly}}</td>
+    </tr>
+    <tr>
+        <td style="border: 1px solid #ddd; padding: 6px 8px;">Other Allowance</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">Fixed</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{otherAllowancesMonthly}}</td>
+        <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{otherAllowancesYearly}}</td>
+    </tr>
+    <tr style="font-weight: bold;">
+        <td style="border: 1px solid #bbb; padding: 6px 8px;">Annual Gross Salary</td>
+        <td style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;"></td>
+        <td style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;">{{annualGrossSalaryMonthly}}</td>
+        <td style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;">{{annualGrossSalaryYearly}}</td>
+    </tr>
+</tbody>
+
+<h4 style="margin-top: 5px;">Retiral Benefits</h4>
+<table style="width: 100%; border-collapse: collapse; margin-top: 2px; font-size: 12px;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th style="border: 1px solid #bbb; padding: 4px 6px; text-align: left;">Component Name</th>
+            <th style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;">Monthly (INR)</th>
+            <th style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;">Yearly(INR)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 6px 8px;">Employer PF</td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{employerPFMonthly}}</td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{employerPFYearly}}</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 6px 8px;"><b> Fixed Pay</b></td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;"><b>{{totalFixedPayMonthly}}</b></td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;"><b>{{totalFixedPayYearly}}</b></td>
+        </tr>
+    </tbody>
+</table>
+
+<h4 style="margin-top: 5px;">Variable Pay</h4>
+<table style="width: 100%; border-collapse: collapse; margin-top: 2px; font-size: 12px;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th style="border: 1px solid #bbb; padding: 4px 6px; text-align: left;">Component Name</th>
+            <th style="border: 1px solid #bbb; padding: 4px 6px; text-align: left;">Nature of Component</th>
+            <th style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;">Monthly (INR)</th>
+            <th style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;">Yearly(INR)</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 6px 8px;">Individual Variable Pay</td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px;">Fixed</td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{individualVariablePayMonthly}}</td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;">{{individualVariablePayYearly}}</td>
+        </tr>
+    </tbody>
+</table>
+
+<h4 style="margin-top: 5px;">Total CTC</h4>
+<table style="width: 100%; border-collapse: collapse; margin-top: 2px; font-size: 12px;">
+    <thead>
+        <tr style="background-color: #f2f2f2;">
+            <th style="border: 1px solid #bbb; padding: 4px 6px; text-align: left;"></th>
+            <th style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;"><b>Monthly (INR)</b></th>
+            <th style="border: 1px solid #bbb; padding: 6px 8px; text-align: right;"><b>Yearly(INR)</b></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 6px 8px;"><b>Total CTC</b></td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;"><b>{{totalCTCMonthly}}</b></td>
+            <td style="border: 1px solid #ddd; padding: 6px 8px; text-align: right;"><b>{{totalCTCYearly}}</b></td>
+        </tr>
+
+
+                    </tbody>
+                </table>
+                <!-- <h4 style="margin-top: 20px;"> Terms & Conditions -</h4>
+                <ol style="padding-left: 18px; font-size: 12px; z-index: 999;">
+                    <li>Two months’ notice should be given by the employee before leaving the company along with resignation.</li>
+                    <li>All salary dues shall be settled after successful completion of the notice period by attending the office and completing all pending tasks with proper handover of data/projects to the immediate senior or tech lead.</li>
+                    <li>For any issue, you must inform the management in written form. Verbal communication shall not be entertained.</li>
+                    <li>Leave shall be accepted only with the permission of the team leader. Approval/rejection of leave is at the sole discretion of the team leader, HR Manager, or Management. Leave cannot be claimed as a right.</li>
+                    <li>You should inform your team leader before taking leave. You will be eligible for 1.5 Casual Leave (CL) per calendar month only after successful completion of the probation period.</li>
+                    <li>Business tours or any office-related work shall take priority when applying for leave. Leaves will be granted based on work priorities.</li>
+                </ol> -->
+            </main>
+        </div>
+        <div class="page-break"></div>
+        <!-- Page 5 -->
+        <div class="pdf-content">
+            <main class="letter-content">
+                <h4 style="margin-top: 20px;"> Additional Notes -</h4>
+                <ol style="padding-left: 18px; font-size: 12px; z-index: 999;">
+                    <li><b>Variable Pay (VP)</b> – Payable as per Variable Pay Policy applicable for the financial year.</li>
+                    <li><b>Provident Fund</b> – 12% of Basic Salary or ₹1,800 per month, as per applicable law,
+                        contributed by both Employer and Employee.</li>
+                    <li><b>Working Hours</b> – Full-time employment; regular schedule: Monday to Friday,10:30 - 07:00 pm.</li>
+                    <li><b>Leave Policy</b> – You will be eligible for <b>18 leaves</b> per annum (including casual, medical,and earned leaves) as per Company policy.</li>
+                    <li><b>Probation</b> – Three months from the date of joining, subject to satisfactory performance.</li>
+                    <li><b>Notice Period</b> – <b>2 month</b> notice.</li>
+                    <li><b>Statutory Deductions</b> – Professional Tax, Income Tax, and other applicable taxes shall be deducted as per law.</li>
+                </ol>
+                <div style="font-size: 14px; text-align: left; margin-bottom: 30px;">
+                    <strong>EMPLOYEE</strong><br>
+                    <b>Mr/Miss {{fullName}}</b>
+                    <div style="margin-top: 40px;">By: _______________________</div>
+                </div>
+                <div style="font-size: 14px; text-align: left;">
+                    <strong>COMPANY</strong><br>
+                    <strong>Startappss Systems Private Limited</strong><br><br> <br>
+                    <img src="https://i.postimg.cc/8Ps3Crjv/Offer-Letter-Saket-Bagdi-1-4-1-1.png" alt="Nihal Jaiswal's signature" class="signature-nihal"><br>
+                    <strong>By:</strong> _______________________ <br>
+                    Name: Nihal Jaiswal<br>
+                    Title: Director | CEO
+                </div>
+            </main>
+        </div>
+        <div class="page-break"></div>
+        <!-- Page 3
+        <div class="pdf-content">
+            <main class="letter-content">
+                
+                <h3 style="margin-top: 40px;">Dear {{fullName}},</h3>
+                <p>Welcome to the dynamic, growing, and ethical team. Following is a list of instructions that must be followed by all of us during our working. Please read it carefully and follow these guidelines:</p>
+                
+                <ol type="1" style="padding-left: 18px; font-size: 14px; line-height: 1.6;">
+                    <li>Undertake short-term or long-term projects to address a variety of issues and needs.</li>
+                    <li>Meet with management or appropriate staff to understand their requirements.</li>
+                    <li>Conduct situational and data analysis to identify and understand a problem or issue.</li>
+                    <li>Present and explain findings to appropriate executives.</li>
+                    <li>Provide advice or suggestions for improvement according to objectives.</li>
+                    <li>Formulate plans to implement recommendations and overcome objections.</li>
+                    <li>Arrange for or provide training to people affected by change.</li>
+                    <li>Evaluate the situation periodically and make adjustments when needed.</li>
+                    <li>Replenish knowledge of industry, products, and field.</li>
+                </ol>
+                
+                <p style="font-size: 14px; font-weight: bold;">Best of Luck!</p>
+                <p style="font-size: 14px; font-weight: bold;">For Startappss Systems Private Limited</p>
+                
+                <div style="font-size: 14px; text-align: left;">
+                    <img src="https://i.postimg.cc/8Ps3Crjv/Offer-Letter-Saket-Bagdi-1-4-1-1.png" alt="Nihal Jaiswal's signature" class="signature-nihal"><br>
+                    <p><strong>Authorized Signature</strong></p>
+                </div>
+            </main>
+        </div>
+        <div class="page-break"></div> -->
+        <!-- Page 4
+        <div class="pdf-content">
+            <div class="page-content-wrapper">
+            
+            <main class="letter-content">
+                <h4 style="text-align: center; font-size: 23px; font-weight: bold; margin-top: 1px;">Confidential Information</h4>
+                <p style="font-size: 14px; margin-top: 10px;">
+                    Due to your access to confidential information, all employees of Startappss Systems Private Limited must sign this agreement.
+                    <strong>“Confidential information”</strong> means any information of a secret or confidential nature relating to the workplace.
+                    Confidential information may include, but is not limited to, the following: trade secrets, proprietary information, customer information, customer lists, methods, plans, documents, data, drawings, manuals, notebooks, reports, models, inventions, formulas, processes, software, information systems, contracts, negotiations, strategic planning, proposals, business alliances, and training materials.
+                    In connection with being enrolled in Startappss Systems Pvt Ltd, I agree to the following:
+                </p>
+                <p style="font-size: 14px;">
+                    <b>I have read and understand the above definition of “confidential information.” I agree that I will not at any time, both during and after my employment in Startappss Systems, communicate or disclose confidential information to any person, corporation, or entity.</b>
+                </p>
+                <p style="font-size: 14px;">
+                    <b>I further recognize and agree that while in Startappss Systems, I may become aware of nonpublic information of a personal nature about employees or associates, including, without limitation, actions, omissions, statements, or personally identifiable medical, family, financial, social, behavioral, or other personal or private information.</b>
+                </p>
+                <p style="font-size: 14px;">
+                    <b>I will not disclose any such information that I learn or get to know to any other person or entity, unless required by applicable law or legal process.</b>
+                </p>
+                <div style="font-size: 14px; text-align: left; margin-bottom: 30px;">
+                    <strong>EMPLOYEE</strong><br>
+                    <b>Mr. {{fullName}}</b>
+                    <div style="margin-top: 40px;">By: _______________________</div>
+                </div>
+                <div style="font-size: 14px; text-align: left;">
+                    <strong>COMPANY</strong><br>
+                    <strong>Startappss Systems Private Limited</strong><br><br> <br>
+                    <img src="https://i.postimg.cc/8Ps3Crjv/Offer-Letter-Saket-Bagdi-1-4-1-1.png" alt="Nihal Jaiswal's signature" class="signature-nihal"><br>
+                    <strong>By:</strong> _______________________ <br>
+                    Name: Nihal Jaiswal<br>
+                    Title: Director | CEO
+                </div>
+            </main>
+        </div>
+        </div>
+        <div class="page-break"></div> -->
+        <!-- Page 4 -->
+        <div class="pdf-content">
+            <main class="letter-content" style="font-family: Arial, sans-serif; line-height: 1.3; flex-grow: 1;">
+                <h2 style="text-align: center; text-decoration: underline;">
+                    Employee Non-Disclosure and Confidentiality Agreement
+                </h2>
+                <p style="font-size: 14px; text-align: justify; margin-top: 10px;">
+                    This Employee Non-Disclosure and Confidentiality Agreement (this “Agreement”) is
+                    entered into as of {{joiningDate}} (the “Effective Date”) by and between Startappss
+                    Systems Private Limited (the “Company”) and Mr/Miss {{fullName}}, an employee of the
+                    Company (the “Employee”). The above parties may be referred to individually as a “Party” or
+                    collectively as the “Parties.”<br><br>
+                    The Company has hired the Employee pursuant to the terms and conditions of the
+                    Employment Agreement executed between the Parties on {{joiningDate}}. In connection
+                    with the Employee’s duties under the Employment Agreement, the Company may disclose to
+                    the Employee certain confidential and proprietary information that is unique and valuable to its
+                    ongoing business operations.<br><br>
+                    In consideration of the Employee’s employment by the Company, and the covenants and
+                    mutual promises contained herein, the Parties agree as follows:
+                </p>
+                <!-- Confidential Information Section -->
+                <h4 style="font-weight: bold; margin-top: 5px;font-size: 14px;">1. Confidential Information</h4>
+                <p style="font-size: 14px; text-align: justify;">
+                    The term “Confidential Information” as used in this Agreement shall mean any data,
+                    information, or knowledge disclosed by the Company to the Employee that is not generally
+                    known to the public, including but not limited to:
+                </p>
+                <ol type="a" style="font-size: 14px; margin-left: 30px;">
+                    <li>The Company’s business or operational plans or activities, existing or contemplated markets, advertising initiatives, methods of operation, products, or services;</li>
+                    <li>The Company’s suppliers or logistics data;</li>
+                    <li>The Company’s customer or supplier lists, cost of goods or services, profits and losses,budgeting, past or future sales, or financial information;</li>
+                    <li>The Company’s schematics, designs, software source or object code, compressed or uncompressed binaries, inventions, patents or patent applications, or illustrations;</li>
+                    <li>The Company’s existing or contemplated designs, models or platforms, formulas, research, notes, or analytical data;</li>
+                    <li>The Company’s management, board of directors, affiliates, suppliers, customers, employees, or third-party contractors;</li>
+                    <li>The Company’s history, entity structure, accounts, or goodwill; copyrights, trademarks, trade secrets, patents, trade names or any other tangible or intangible rights, whether registered or unregistered;</li>
+                    <li>The Company's technical systems, processes, methods, algorithms, computational schemas, know-how, or trade secrets;</li>
+                    <li>The Company’s technical systems, processes, methods, algorithms, computational schemas, know-how, or trade secrets;</li>
+                    <li>The Company’s employees, salaries, job-related functions, duties or responsibilities; written, auditory, or electronic communications;</li>
+                </ol>
+            </main>
+        </div>
+        <div class="page-break"></div>
+        <!-- Page 5 -->
+        <div class="pdf-content">
+            <main class="letter-content" style="font-family: Arial, sans-serif; line-height: 1.3; flex-grow: 1;">
+                <ol type="a" start="11" style="font-size: 14px; margin-left: 30px;">
+                    <li>Any information which, if disclosed (whether true or untrue), could harm the goodwill or reputation of the Company, its management, board of directors, affiliates, methods of operation, products, or services; or</li>
+                    <li>Any other information of any kind or nature that the Company desires to maintain as confidential.</li>
+                </ol>
+                <h5 style="font-weight: bold; margin-top: 5px;font-size: 14px;">2.Exclusions to Confidential Information.</h5>
+                <p style="font-size: 14px; text-align: justify; margin-top: 10px;">
+                    The obligation of confidentiality with respect to Confidential Information will not apply to any information that:
+                </p>
+                <ol type="a" style="font-size: 14px; margin-left: 30px;">
+                    <li>Is or becomes publicly known and available other than as a result of prior unauthorized disclosure by the Employee;</li>
+                    <li>Is or was received by the Employee from a third party who, to the Employee’s best knowledge, was not under a confidentiality obligation to the Company with respect to such information;</li>
+                    <li>Is disclosed by the Employee with the Company’s prior written consent;</li>
+                    <li>Is independently developed by the Employee without the use of the Company’s Confidential Information;</li>
+                    <li>The Employee is legally compelled to disclose by applicable law, or government regulation, provided that, to the extent lawful, the Employee gives prompt written notice to the Company prior to such disclosure.</li>
+                </ol>
+                <h5 style="font-weight: bold; margin-top: 5px;font-size: 14px;">3. Obligation to Maintain Confidentiality:</h5>
+                <p style="font-size: 14px; text-align: justify; margin-top: 10px;">
+                    The Employee agrees to 
+                </p>
+                <ol type="a" style="font-size: 14px; margin-left: 30px;">
+                    <li> Retain Confidential Information in strict confidence and protect its security, integrity, and confidentiality;</li>
+                    <li> Not permit unauthorized access, disclosure, publication, or dissemination of Confidential Information except in accordance with this Agreement; and</li>
+                    <li> Return all documents, memorandum, notes, or other records (in any format) containing Confidential Information upon termination of employment or upon request by the Company.</li>
+                    <!-- <li> If the Employee is legally compelled by applicable law, by any court, governmental agency, or regulatory authority, or subpoena or discovery request in pending litigation, but only if, to the extent lawful, the Employee gives prompt written notice of that fact to the Company prior to disclosure so that the Company may request a protective order or other remedy, and the Employee may disclose only such portion of the Confidential Information which it is legally obligated to disclose.</li> -->
+                </ol>
+                <p  style="font-size: 14px; text-align: justify;">The obligation not to disclose Confidential Information shall survive termination of this Agreement and remain in effect for <b>two (2) years following the Employee’s termination of employment</b> with the Company, except to the extent that Confidential Information falls under the exclusions in <b>Section 2</b>.</p>
+                <h5 style="font-weight: bold; margin-top: 5px;font-size: 14px;">4.Disclaimer</h5>
+                <p style="font-size: 14px; text-align: justify;">
+                    The Company makes no representation or warranty, express or implied, regarding the accuracy or completeness of any Confidential Information disclosed under this Agreement.
+                </p>
+                <!-- <ol type="a" style="font-size: 14px; margin-left: 30px;">
+                    
+                </ol> -->
+            </main>
+        </div>
+        <div class="page-break"></div>
+        <!-- Page 6 -->
+        <div class="pdf-content">
+            <main class="letter-content" style="flex-grow: 1; padding: 0 20px; line-height: 1.3;">
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px; font-size: 14px;">5. Remedies</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                   The Employee acknowledges that the unauthorized use or disclosure of Confidential Information would cause irreparable harm to the Company, for which monetary damages would not be an adequate remedy. Accordingly, the Company shall be entitled to seek equitable relief (including injunctions) in addition to any other legal remedies available at law or in equity. In any action brought by the Company under this Section, the Company shall also be entitled to recover reasonable attorney’s fees and costs from the Employee.</p>
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px; font-size: 14px;">6. Notices</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                   All notices under this Agreement must be in writing and shall be effective upon receipt if delivered: In person,By overnight courier service, or By certified/registered mail (postage prepaid, return receipt requested),to the Party at the following addresses (or to such other address as a Party may later designate in writing):</p>
+
+                   <p style="font-size: 14px; text-align: left; margin-bottom: 30px;">
+                    <b>IN WITNESS WHEREOF, </b> the Parties hereto have executed this Agreement as of the date first written above.
+                </p>
+                <div style="font-size: 14px; text-align: left; margin-bottom: 30px;">
+                    <strong>EMPLOYEE</strong><br>
+                    <b>Mr/Miss {{fullName}}</b>
+                    <div style="margin-top: 40px;">By: _______________________</div>
+                </div>
+                <div style="font-size: 14px; text-align: left;">
+                    <strong>COMPANY</strong><br>
+                    <strong>Startappss Systems Private Limited</strong><br><br> <br>
+                    <img src="https://i.postimg.cc/8Ps3Crjv/Offer-Letter-Saket-Bagdi-1-4-1-1.png" alt="Nihal Jaiswal's signature" class="signature-nihal"><br>
+                    <strong>By:</strong> _______________________ <br>
+                    Name: Nihal Jaiswal<br>
+                    Title: Director | CEO
+                </div>
+            </main>
+        </div>
+        <div class="page-break"></div>
+        <!-- Page 8
+        <div class="pdf-content">
+            <main class="letter-content" style="flex-grow: 1; padding: 0 20px; line-height: 1.4; ">
+                <ol start="5">
+                    <li>1.Remedies</li>
+                    <p style="text-align: justify; margin-bottom: 10px;">
+                        The Employee acknowledges that use or disclosure of any confidential and proprietary information in a manner inconsistent with this Agreement will give rise to irreparable injury for which damages would not be an adequate remedy. Accordingly, in addition to any other legal remedies which may be available at law or in equity, the Company shall be entitled to equitable or injunctive relief against the unauthorized use or disclosure of confidential and proprietary information. The Company shall be entitled to pursue any other legally permissible remedy available as a result of such breach, including but not limited to damages, both direct and consequential.
+                    </p>
+                </ol>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    In any action brought by the Company under this Section, the Company shall be entitled to recover its attorney’s fees and costs from the Employee.
+                </p>
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px; font-size: 14px;">6. Notices</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    All notices given under this Agreement must be in writing. A notice is effective upon receipt and shall be sent via one of the following methods: delivery in person, overnight courier service, certified or registered mail, postage prepaid, return receipt requested, addressed to the Party to be notified at the below address or by facsimile at the below facsimile number or, in the case of either Party, to such other party, address, or facsimile number as such Party may designate upon reasonable notice to the other Party.
+                </p>
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px; font-size: 14px;">7. Termination</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    This Agreement will terminate on the earlier of: <ol type="a">
+                        <li>the written agreement of the Parties to terminate this Agreement;</li><li>the cessation of the Employee’s employment; or</li><li>one year from the date hereof.
+                        </li>
+                    </ol>
+                </p>
+                 <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px; font-size: 14px;">8. Amendment</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    This Agreement may be amended or modified only by a written agreement signed by both of the Parties.
+                </p>
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;font-size: 14px;">9. Jurisdiction</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    This Agreement will be governed by and construed in accordance with the laws of the State of Madhya Pradesh, without regard to the principles of conflict of laws. Any dispute arising from this Agreement shall be resolved in the courts of the State of Madhya Pradesh.
+                </p>
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;font-size: 14px;">10. No Offer or Sale</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    Nothing in this Agreement will be deemed a sale or offer for sale of Confidential Information nor obligate the Company to grant the Employee a license or any rights, by statute, common law theory of estoppel or otherwise, to Confidential Information.
+                </p> --
+            </main>
+        </div>
+        <div class="page-break"></div> -->
+          <!-- Page 10 -->
+        <!-- <div class="pdf-content">
+            <main class="letter-content" style="flex-grow: 1; padding: 0 20px; line-height: 1.4; font-size: 13px; text-align: left; margin-top: 40px;">
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px; font-size: 14px;">8. Amendment</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    This Agreement may be amended or modified only by a written agreement signed by both of the Parties.
+                </p>
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;font-size: 14px;">9. Jurisdiction</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    This Agreement will be governed by and construed in accordance with the laws of the State of Madhya Pradesh, without regard to the principles of conflict of laws. Any dispute arising from this Agreement shall be resolved in the courts of the State of Madhya Pradesh.
+                </p>
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;font-size: 14px;">10. No Offer or Sale</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    Nothing in this Agreement will be deemed a sale or offer for sale of Confidential Information nor obligate the Company to grant the Employee a license or any rights, by statute, common law theory of estoppel or otherwise, to Confidential Information.
+                </p>
+                 <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;font-size: 14px;">11. Entire Agreement</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    This Agreement constitutes the entire agreement between the Parties and supersedes all prior or contemporaneous negotiations, discussions, or agreements, whether written or oral, regarding the subject matter hereof.
+                </p>
+                <h5 style="font-weight: bold; margin-top: 10px; margin-bottom: 5px;font-size: 14px;">12. Miscellaneous</h5>
+                <p style="text-align: justify; margin-bottom: 10px;">
+                    No joint venture, partnership, or agency relationship exists between the Employee, the Company, or any third-party as a result of this Agreement. This Agreement will inure to the benefit of and be binding on the respective successors and permitted assigns of the parties. Neither Party may assign its rights or delegate its duties under this Agreement without the other Party’s prior written consent. In the event that any provision of this Agreement is held to be invalid, illegal or unenforceable in whole or in part, the remaining provisions shall not be affected and shall continue to be valid, legal and enforceable as though the invalid, illegal or unenforceable parts had not been included in this Agreement. Neither Party will be charged with any waiver of any provision of this Agreement, unless such waiver is evidenced by a writing signed by the Party and any such waiver will be limited to the terms of such writing.
+                </p>
+            </main>
+        </div>        
+        <div class="page-break"></div> -->
+        <!-- Page 9
+         <div class="pdf-content">
+                <p style="font-size: 14px; text-align: left; margin-bottom: 30px;">
+                    <b>IN WITNESS WHEREOF, </b> the Parties hereto have executed this Agreement as of the date first written above.
+                </p>
+                <div style="font-size: 14px; text-align: left; margin-bottom: 30px;">
+                    <strong>EMPLOYEE</strong><br>
+                    <b>Mr. {{fullName}}</b>
+                    <div style="margin-top: 40px;">By: _______________________</div>
+                </div>
+                <div style="font-size: 14px; text-align: left;">
+                    <strong>COMPANY</strong><br>
+                    <strong>Startappss Systems Private Limited</strong><br><br> <br>
+                    <img src="https://i.postimg.cc/8Ps3Crjv/Offer-Letter-Saket-Bagdi-1-4-1-1.png" alt="Nihal Jaiswal's signature" class="signature-nihal"><br>
+                    <strong>By:</strong> _______________________ <br>
+                    Name: Nihal Jaiswal<br>
+                    Title: Director | CEO
+                </div>
+                
+         </div>
+    </div> -->
+    <!-- Footer -->
+    <div class="pdf-footer">
+            <div class="footer-bar">
+                <div class="footer-address">
+                HO - 93, Heera Bagh Colony, Scheme No. 78, Near Dewas Naka, Indore, M.P. 452010 <br>
+                CO - 15th Floor, Gaur Chowk NX One, T-3, A-1510, Greater Noida, Uttar Pradesh, 201301
+                <hr>
+                </div>
+                <div class="footer-contact">
+                    <div class="footer-contact-item">
+                        <img src="https://cdn-icons-png.flaticon.com/512/159/159832.png" alt="phone" class="footer-icon">
+                        <a href="tel:+919238920590">+91 923-892-0590</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <img src="https://cdn-icons-png.flaticon.com/512/84/84380.png" alt="website" class="footer-icon">
+                        <a href="https://www.startappss.com/">www.startappss.com</a>
+                    </div>
+                </div>
+            </div>
+            <img src="https://i.postimg.cc/FHd2TJvH/Asset-6.png" alt="Footer Banner" class="footer-banner"/>
+        </div>
+</body>
+</html>

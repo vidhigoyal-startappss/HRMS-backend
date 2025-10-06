@@ -5,7 +5,7 @@ import {
   OnboardingForm,
   OnboardingFormDocument,
 } from "./schemas/onboarding-form.schema";
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 import { EmailService } from "../mail/mail.service";
 @Injectable()
 export class OnboardingService {

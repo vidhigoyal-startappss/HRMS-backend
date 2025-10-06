@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsMongoId } from 'class-validator';
-import { Types } from 'mongoose';
-import {ApiProperty} from  '@nestjs/swagger';
+import { IsNotEmpty, IsMongoId } from "class-validator";
+import { Types } from "mongoose";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateNotificationDto {
   @ApiProperty()
@@ -16,42 +16,39 @@ export class CreateNotificationDto {
   @ApiProperty()
   relatedModule?: string;
 }
-export class notificationUserResponse{
+export class notificationUserResponse {
+  @ApiProperty()
+  id: string;
 
   @ApiProperty()
-  id:string
+  recipient: string;
 
   @ApiProperty()
-  recipient:string
+  title: string;
 
   @ApiProperty()
-  title:string
+  message: string;
 
   @ApiProperty()
-  message:string
+  isRead: boolean;
 
   @ApiProperty()
-  isRead:boolean
+  type: string;
 
   @ApiProperty()
-  type:string
+  createdAt: string;
 
   @ApiProperty()
-  createdAt:string
-
-  @ApiProperty()
-  updatedAt:string
-
+  updatedAt: string;
 }
 
-export class deleteNotificationResponse{
-
+export class deleteNotificationResponse {
   @ApiProperty()
-  message:string
+  message: string;
 }
 
-export class markAllResponse{
-
+export class markAllResponse {
   @ApiProperty()
-  modifiedCount:1
+  modifiedCount: 1;
 }
+

@@ -1,10 +1,6 @@
-import { IsNotEmpty, IsString, IsNumber, IsPositive } from 'class-validator';
+import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreatePayrollDto {
-  @IsNotEmpty()
-  @IsString()
-  userId: string;
-
   @IsNotEmpty()
   @IsString()
   employeeId: string;
@@ -12,21 +8,4 @@ export class CreatePayrollDto {
   @IsNotEmpty()
   @IsString()
   month: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  @IsPositive()
-  basicSalary: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  allowances: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  deductions: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  netPay: number;
 }

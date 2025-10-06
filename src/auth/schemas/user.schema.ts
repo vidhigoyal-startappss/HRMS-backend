@@ -15,6 +15,71 @@ class UserLeaves {
 const UserLeavesSchema = SchemaFactory.createForClass(UserLeaves);
 
 @Schema()
+export class SalaryDetails {
+  @Prop({ default: 0 })
+  basicFixedMonthly: number;
+
+  @Prop({ default: 0 })
+  basicFixedYearly: number;
+
+  @Prop({ default: 0 })
+  hraFixedMonthly: number;
+
+  @Prop({ default: 0 })
+  hraFixedYearly: number;
+
+  @Prop({ default: 0 })
+  conveyanceMonthly: number;
+
+  @Prop({ default: 0 })
+  conveyanceYearly: number;
+
+  @Prop({ default: 0 })
+  dearnessAllowancesMonthly: number;
+
+  @Prop({ default: 0 })
+  dearnessAllowancesYearly: number;
+
+  @Prop({ default: 0 })
+  otherAllowancesMonthly: number;
+
+  @Prop({ default: 0 })
+  otherAllowancesYearly: number;
+
+  @Prop({ default: 0 })
+  annualGrossSalaryMonthly: number;
+
+  @Prop({ default: 0 })
+  annualGrossSalaryYearly: number;
+
+  @Prop({ default: 0 })
+  employerPFMonthly: number;
+
+  @Prop({ default: 0 })
+  employerPFYearly: number;
+
+  @Prop({ default: 0 })
+  totalFixedPayMonthly: number;
+
+  @Prop({ default: 0 })
+  totalFixedPayYearly: number;
+
+  @Prop({ default: 0 })
+  individualVariablePayMonthly: number;
+
+  @Prop({ default: 0 })
+  individualVariablePayYearly: number;
+
+  @Prop({ default: 0 })
+  totalCTCMonthly: number;
+
+  @Prop({ default: 0 })
+  totalCTCYearly: number;
+}
+
+export const SalaryDetailsSchema = SchemaFactory.createForClass(SalaryDetails);
+
+@Schema()
 export class Sequence {
   @Prop({ required: true, unique: true })
   collectionName: string;
@@ -163,6 +228,9 @@ export class User {
 
   @Prop({ default: false })
   isDeleted: boolean;
+
+  @Prop({ type: SalaryDetailsSchema, default: {} })
+  salaryDetails: SalaryDetails;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

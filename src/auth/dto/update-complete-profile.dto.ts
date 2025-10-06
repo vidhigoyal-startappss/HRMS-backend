@@ -1,9 +1,10 @@
-import { BasicDetailsDto } from './basic-details.dto';
-import { EducationDetailsDto } from './education-details.dto';
-import { BankDetailsDto } from './bank-details.dto';
-import { Type } from 'class-transformer';
-import { ValidateNested, IsOptional, IsNumber, Min } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { BasicDetailsDto } from "./basic-details.dto";
+import { EducationDetailsDto } from "./education-details.dto";
+import { BankDetailsDto } from "./bank-details.dto";
+import { Type } from "class-transformer";
+import { ValidateNested, IsOptional, IsNumber, Min } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { SalaryDetailsDto } from "./salary-Details.dto";
 
 export class UpdateCompleteProfileDto {
   @IsOptional()
@@ -35,10 +36,15 @@ export class UpdateCompleteProfileDto {
   @IsNumber()
   @Min(0)
   wfhAllowed?: number;
+
+  @IsOptional()
+  @ValidateNested()
+  @ApiProperty()
+  @Type(() => SalaryDetailsDto)
+  salaryDetails?: SalaryDetailsDto;
 }
 
 export class UpdateCompleteResponse {
- 
   @ApiProperty()
   basicDetails?: BasicDetailsDto;
   @ApiProperty()

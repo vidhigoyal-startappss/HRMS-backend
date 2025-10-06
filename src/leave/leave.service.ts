@@ -43,6 +43,12 @@ export class LeaveService {
 
     return count;
   }
+
+   async findLeaveById(id: string) {
+    return this.leaveModel.findById(id).exec();
+  }
+
+
   async applyLeave(
     user: {
       userId: string;
@@ -234,5 +240,40 @@ z
     } catch (error) {
       this.logger.error("Monthly Leave Credit Cron Failed", error);
     }
+  }
+    async deleteLeave(user: { userId: string; customPermissions: Record<string, string[]> }, id: string) {
+    if (!user.customPermissions["leaves"]?.includes("delete")) {
+      throw new ForbiddenException("You do not have permission to delete leave");
+    }
+
+    const leave = await this.findLeaveById(id);
+    if (!leave) {
+      throw new NotFoundException("Leave request not found");
+    }
+
+    if (leave.status !== "Pending") {
+      throw new BadRequestException("You can only delete pending leave requests.");
+    }
+
+    await this.leaveModel.deleteOne({ _id: id });
+
+    await this.notificationService.create({
+      recipient: new mongoose.Types.ObjectId(leave.userId),
+      title: "Leave Deleted",
+      message: `Your leave request from ${leave.startDate?.toDateString()} to ${leave.endDate?.toDateString()} has been deleted.`,
+      type: "Leave",
+    });
+
+    await this.notificationService.notifyRoles(
+      ["HR", "Admin"],
+      {
+        title: `Leave Deleted for ${leave.userId}`,
+        message: `Leave request for ${leave.userId} from ${leave.startDate?.toDateString()} to ${leave.endDate?.toDateString()} has been deleted.`,
+        type: "Leave",
+      },
+      user.userId
+    );
+
+    return { message: "Leave successfully deleted" };
   }
 }

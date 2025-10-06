@@ -1,12 +1,12 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, Types } from "mongoose";
 
 export type AttendanceDocument = Attendance & Document;
 
 @Schema({ timestamps: true })
 export class Attendance {
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId; 
+  @Prop({ type: Types.ObjectId, ref: "User", required: true })
+  userId: Types.ObjectId;
   @Prop()
   firstName: string;
 
@@ -23,7 +23,7 @@ export class Attendance {
   checkOutTime: Date;
 
   @Prop()
-  totalHours: string; 
+  totalHours: string;
   @Prop()
   location: string;
 
@@ -31,7 +31,7 @@ export class Attendance {
   checkedOut: boolean;
 
   @Prop({ default: false })
-  leave: boolean; 
+  leave: boolean;
 }
 
 export const AttendanceSchema = SchemaFactory.createForClass(Attendance);

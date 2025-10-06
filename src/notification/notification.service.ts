@@ -1,18 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Notification, NotificationDocument } from './schema/notification.schema';
-import { Model } from 'mongoose';
-import { CreateNotificationDto } from './dto/notification.dto';
-import { User, UserDocument } from '../auth/schemas/user.schema'; 
-import { Types } from 'mongoose';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import {
+  Notification,
+  NotificationDocument,
+} from "./schema/notification.schema";
+import { Model } from "mongoose";
+import { CreateNotificationDto } from "./dto/notification.dto";
+import { User, UserDocument } from "../auth/schemas/user.schema";
+import { Types } from "mongoose";
+import { NotFoundException } from "@nestjs/common";
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectModel(Notification.name)
     private notificationModel: Model<NotificationDocument>,
     @InjectModel(User.name)
-    private userModel: Model<UserDocument>,
+    private userModel: Model<UserDocument>
   ) {}
 
   async create(dto: CreateNotificationDto) {
@@ -20,20 +23,22 @@ export class NotificationService {
     return notification.save();
   }
 
-async getUserNotifications(userId: string) {
-  return this.notificationModel.find({
-      recipient: new Types.ObjectId(userId), 
-  }).sort({ createdAt: -1 });
-}
+  async getUserNotifications(userId: string) {
+    return this.notificationModel
+      .find({
+        recipient: new Types.ObjectId(userId),
+      })
+      .sort({ createdAt: -1 });
+  }
 
-async markAsRead(notificationId: string) {
+  async markAsRead(notificationId: string) {
     const updated = await this.notificationModel.findByIdAndUpdate(
       notificationId,
       { isRead: true },
-      { new: true }, 
+      { new: true }
     );
     if (!updated) {
-      throw new NotFoundException('Notification not found');
+      throw new NotFoundException("Notification not found");
     }
     return updated;
   }
@@ -41,41 +46,38 @@ async markAsRead(notificationId: string) {
   async markAllAsRead(userId: string) {
     const result = await this.notificationModel.updateMany(
       { recipient: new Types.ObjectId(userId), isRead: false },
-      { $set: { isRead: true } },
+      { $set: { isRead: true } }
     );
     return { modifiedCount: result.modifiedCount };
   }
 
-    async deleteNotification(notificationId: string) {
-    const deleted = await this.notificationModel.findByIdAndDelete(notificationId);
+  async deleteNotification(notificationId: string) {
+    const deleted =
+      await this.notificationModel.findByIdAndDelete(notificationId);
     if (!deleted) {
-      throw new NotFoundException('Notification not found');
+      throw new NotFoundException("Notification not found");
     }
-    return { message: 'Notification deleted successfully' };
+    return { message: "Notification deleted successfully" };
   }
 
+  async notifyRoles(
+    roles: string[],
+    payload: Omit<CreateNotificationDto, "recipient">,
+    excludeUserId?: string
+  ) {
+    const filter: any = { role: { $in: roles } };
 
+    if (excludeUserId) {
+      filter._id = { $ne: new Types.ObjectId(excludeUserId) };
+    }
 
+    const users = await this.userModel.find(filter);
 
-async notifyRoles(
-  roles: string[],
-  payload: Omit<CreateNotificationDto, 'recipient'>,
-  excludeUserId?: string, 
-) {
-  const filter: any = { role: { $in: roles } };
+    const notifications = users.map((user) => ({
+      ...payload,
+      recipient: user._id,
+    }));
 
-  if (excludeUserId) {
-    filter._id = { $ne: new Types.ObjectId(excludeUserId) };
+    return this.notificationModel.insertMany(notifications);
   }
-
-  const users = await this.userModel.find(filter);
-
-  const notifications = users.map((user) => ({
-    ...payload,
-    recipient: user._id,
-  }));
-
-  return this.notificationModel.insertMany(notifications);
-}
-
 }

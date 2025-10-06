@@ -3,25 +3,25 @@ import {
   IsDateString,
   IsNotEmpty,
   IsOptional,
-} from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class EducationDetailsDto {
   @IsString()
   @IsNotEmpty()
-   @ApiProperty()
+  @ApiProperty()
   qualification: string;
 
   @IsString()
-   @ApiProperty()
+  @ApiProperty()
   @IsNotEmpty()
   institution: string;
   @IsNotEmpty()
-   @ApiProperty()
+  @ApiProperty()
   yearOfPassing: number;
 
   @IsString()
   @IsNotEmpty()
-   @ApiProperty()
+  @ApiProperty()
   grade: string;
 }

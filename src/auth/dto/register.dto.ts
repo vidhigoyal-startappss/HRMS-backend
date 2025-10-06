@@ -6,52 +6,55 @@ import {
   MinLength,
   IsOptional,
   IsObject,
-  IsMongoId
-} from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+  IsMongoId,
+} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class RegisterDto {
-  @ApiProperty({ description :"Email Id is required",example:"user@gmail.com"})
+  @ApiProperty({
+    description: "Email Id is required",
+    example: "user@gmail.com",
+  })
   @IsEmail()
   @IsNotEmpty()
   email: string;
 
-  @ApiProperty({ description :"Password is required",example:"password"})
+  @ApiProperty({ description: "Password is required", example: "password" })
   @IsString()
   @IsNotEmpty()
-  @MinLength(6, { message: 'Password must be at least 6 characters long' })
+  @MinLength(6, { message: "Password must be at least 6 characters long" })
   password: string;
 
-  @ApiProperty({ description :"Role is required",example:"role"})
+  @ApiProperty({ description: "Role is required", example: "role" })
   @IsString()
   @IsNotEmpty()
-  @IsIn(['SuperAdmin', 'Admin', 'Manager', 'HR', 'Employee'], {
-    message: 'Role must be Admin, Manager, HR, or Employee',
+  @IsIn(["SuperAdmin", "Admin", "Manager", "HR", "Employee"], {
+    message: "Role must be Admin, Manager, HR, or Employee",
   })
   role: string;
 
+  // @IsOptional()
+  // @IsString()
+  // name?: string;
 
   @IsOptional()
-  @IsObject({ message: 'Custom permissions must be an object' })
+  @IsObject({ message: "Custom permissions must be an object" })
   customPermissions?: Record<string, string[]>;
-
 }
 
 export class RegisterResponse {
+  @ApiProperty()
+  message: string;
 
   @ApiProperty()
-  message:string;
+  userId: string;
 
   @ApiProperty()
-  userId : string;
+  role: string;
 
   @ApiProperty()
-  role : string;
+  createdBy: string;
 
   @ApiProperty()
-  createdBy : string;
-
-  @ApiProperty()
-  employeeId : string;
-
+  employeeId: string;
 }

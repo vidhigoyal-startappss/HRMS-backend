@@ -1,14 +1,30 @@
 import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose"; 
+import { Model } from "mongoose"; 
+
+import { SignedLetter, SignedLetterDocument } from "./schemas/signed-letter.schema"; 
 
 @Injectable()
 export class LetterService {
-  private signedLetters = new Map<string, string>();
+  constructor(
+    @InjectModel(SignedLetter.name)
+    private model: Model<SignedLetterDocument>
+  ) {}
 
-  saveSignedLetter(userId: string, url: string): void {
-    this.signedLetters.set(userId, url);
+  async saveSignedLetter(userId: string, url: string) {
+    const existing = await this.model.findOne({ employeeId: userId });
+
+    if (existing) {
+      existing.signedLetterUrl = url;
+      existing.uploadedAt = new Date();
+      return await existing.save();
+    }
+
+    return await this.model.create({ employeeId: userId, signedLetterUrl: url });
   }
 
-  getSignedLetterUrl(userId: string): string | null {
-    return this.signedLetters.get(userId) || null;
+  async getSignedLetterUrl(userId: string): Promise<string | null> {
+    const record = await this.model.findOne({ employeeId: userId });
+    return record?.signedLetterUrl || null;
   }
 }

@@ -1,36 +1,48 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, Req, UseGuards } from '@nestjs/common';
-import { PayrollService } from './payroll.service';
-import { CreatePayrollDto } from './dto/create-payroll.dto';
-import { UpdatePayrollDto } from './dto/update-payroll.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Param,
+  UploadedFile,
+  UseInterceptors,
+  BadRequestException,
+} from "@nestjs/common";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { memoryStorage } from "multer";
+import { CreatePayrollDto } from "./dto/create-payroll.dto";
+import { PayrollService } from "./payroll.service";
 
-@Controller('payrolls')
-@UseGuards(JwtAuthGuard)
+@Controller("payrolls")
 export class PayrollController {
   constructor(private readonly payrollService: PayrollService) {}
-
-  @Post()
-  async create(@Body() createPayrollDto: CreatePayrollDto) {
-    return this.payrollService.createPayroll(createPayrollDto);
+  @Get(":employeeId")
+  async getPayrollsByEmployee(@Param("employeeId") employeeId: string) {
+    return this.payrollService.getPayrollsByEmployee(employeeId);
   }
-
-  @Get()
-  async findAll(@Req() req) {
-    return this.payrollService.findAll(req.user);
-  }
-
-  @Get(':id')
-  async findOne(@Req() req, @Param('id') id: string) {
-    return this.payrollService.findOne(req.user, id);
-  }
-
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() updatePayrollDto: UpdatePayrollDto) {
-    return this.payrollService.updatePayroll(id, updatePayrollDto);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.payrollService.deletePayroll(id);
+  @Post("upload")
+  @UseInterceptors(
+    FileInterceptor("file", {
+      storage: memoryStorage(),
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype === "application/pdf") {
+          cb(null, true);
+        } else {
+          cb(new BadRequestException("Only PDF files are allowed"), false);
+        }
+      },
+    })
+  )
+  async uploadPayslip(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() createPayrollDto: CreatePayrollDto
+  ) {
+    if (!createPayrollDto.employeeId) {
+      throw new BadRequestException("employeeId is required");
+    }
+    if (!createPayrollDto.month) {
+      throw new BadRequestException("month is required");
+    }
+    return this.payrollService.createPayroll(createPayrollDto, file);
   }
 }

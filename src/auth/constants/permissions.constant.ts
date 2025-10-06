@@ -21,7 +21,7 @@ export const PERMISSIONS = {
   },
   Employee: {
     users: ['read'],
-    leaves: ['read', 'write'],
+     leaves: ['read', 'write', 'delete'], 
     attendance: ['read', 'write'],
   },
 };

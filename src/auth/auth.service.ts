@@ -81,7 +81,11 @@ export class AuthService {
     });
 
     const savedUser = await createdUser.save();
+    // const userName = registerDto.name || savedUser.email;
+    console.log("Sending email for new user: ", registerDto.email);
+
     await this.emailService.sendUserCredentials(
+      // registerDto.name ?? savedUser.email,
       registerDto.email,
       registerDto.password
     );
@@ -140,7 +144,7 @@ export class AuthService {
   }
 
   async updateCompleteProfile(userId: string, dto: UpdateCompleteProfileDto) {
-    const { basicDetails, educationDetails, bankDetails } = dto;
+    const { basicDetails, educationDetails, bankDetails , salaryDetails  } = dto;
 
     let paidLeaveAllowed = 0;
     let wfhAllowed = 0;
@@ -159,6 +163,7 @@ export class AuthService {
       ...basicDetails,
       ...educationDetails,
       ...bankDetails,
+          salaryDetails, 
       paidLeaveAllowed,
       wfhAllowed,
     };
@@ -192,7 +197,7 @@ export class AuthService {
     return this.userModel.find(baseQuery);
   }
 
-  async findEmployeeById(userId: string , includeArchived  = false) {
+  async findEmployeeById(userId: string, includeArchived = false) {
     const user = await this.userModel.findById(userId);
     if (!user || (user.isDeleted && !includeArchived)) {
       throw new NotFoundException("User not found or deleted");
@@ -333,5 +338,4 @@ export class AuthService {
   //   await newRequest.save();
   //   return { message: 'Delete request submitted for approval' };
   // }
- 
 }

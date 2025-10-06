@@ -1,28 +1,22 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
+
+@Schema({ timestamps: true })
+export class MonthlyPayroll {
+  @Prop({ required: true })
+  month: string;
+
+  @Prop({ required: true })
+  payrollSlipUrl: string;
+}
 
 @Schema({ timestamps: true })
 export class Payroll {
-  @Prop({ required: true })
-  userId: string;
-
   @Prop({ required: true, unique: true })
   employeeId: string;
 
-  @Prop({ required: true })
-  month: string; // Format: YYYY-MM
-
-  @Prop({ required: true })
-  basicSalary: number;
-
-  @Prop({ required: true })
-  allowances: number;
-
-  @Prop({ required: true })
-  deductions: number;
-
-  @Prop({ required: true })
-  netPay: number;
+  @Prop({ type: [MonthlyPayroll], default: [] })
+  payrolls: MonthlyPayroll[];
 }
 
 export type PayrollDocument = Payroll & Document;

@@ -7,6 +7,7 @@ import {
   Req,
   Param,
   Patch,
+  Delete,
 } from "@nestjs/common";
 import { LeaveService } from "./leave.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
@@ -25,6 +26,11 @@ import {
   updateResponse,
   updateStatusDTO,
 } from "./dto/apply-leave.dto";
+import {
+  ForbiddenException,
+  NotFoundException,
+  BadRequestException,
+} from "@nestjs/common";
 
 @Controller("leaves")
 @UseGuards(JwtAuthGuard)
@@ -67,5 +73,23 @@ export class LeaveController {
     @Body("status") status: string
   ) {
     return this.leaveService.updateLeaveStatus(req.user, id, status);
-  }z
+  }
+
+
+
+
+  
+  @ApiParam({ name: "id" })
+  @ApiOkResponse({ description: "Leave deleted successfully" })
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles("HR", "Admin", "SuperAdmin", "Employee")
+  @Delete(":id")
+  async deleteLeave(@Req() req: any, @Param("id") id: string) {
+    console.log("Delete leave called");
+    console.log("User from request:", req.user);
+
+    const result = await this.leaveService.deleteLeave(req.user, id);
+
+    return result;
+  }
 }

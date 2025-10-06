@@ -1,210 +1,204 @@
-import { IsEmail, IsString, IsNotEmpty, MinLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
-import { string,array } from 'joi';
-import { LeavesDto } from './basic-details.dto';
+import { IsEmail, IsString, IsNotEmpty, MinLength } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
+import { string, array } from "joi";
+import { LeavesDto } from "./basic-details.dto";
 
 export class LoginDto {
-@ApiProperty({ description: 'The email address of the user', example: 'user@gmail.com' })
-  @IsEmail({}, { message: 'Invalid email format' })
-  @IsNotEmpty({ message: 'Email is required' })
+  @ApiProperty({
+    description: "The email address of the user",
+    example: "user@gmail.com",
+  })
+  @IsEmail({}, { message: "Invalid email format" })
+  @IsNotEmpty({ message: "Email is required" })
   email: string;
 
-  @ApiProperty({ description: 'The password of the user', example: 'password' })
-  @IsString({ message: 'Password must be a string' })
-  @IsNotEmpty({ message: 'Password is required' })
+  @ApiProperty({ description: "The password of the user", example: "password" })
+  @IsString({ message: "Password must be a string" })
+  @IsNotEmpty({ message: "Password is required" })
   password: string;
 }
 
 export class RegisterResponse {
+  @ApiProperty()
+  message: string;
 
   @ApiProperty()
-  message:string;
+  userId: string;
 
   @ApiProperty()
-  userId : string;
+  role: string;
 
   @ApiProperty()
-  role : string;
+  createdBy: string;
 
   @ApiProperty()
-  createdBy : string;
-
-  @ApiProperty()
-  employeeId : string;
-
+  employeeId: string;
 }
 
 export class customPermissionResponse {
+  @ApiProperty()
+  users: [];
 
   @ApiProperty()
-   users : [];
+  leaves: [];
 
-   @ApiProperty()
-   leaves : [];
-
-   @ApiProperty()
-   attendance : [];
-
+  @ApiProperty()
+  attendance: [];
 }
 
 export class userLoginResponse {
   @ApiProperty()
-   id :string;
+  id: string;
 
-    @ApiProperty()
-   email :string;
+  @ApiProperty()
+  email: string;
 
-     @ApiProperty()
-   role :string;
+  @ApiProperty()
+  role: string;
 
-     @ApiProperty()
-   customPermission:customPermissionResponse;
+  @ApiProperty()
+  customPermission: customPermissionResponse;
 
+  @ApiProperty()
+  employeeId: string;
 
-     @ApiProperty()
-   employeeId :string;
-
-     @ApiProperty()
-   name :string;
+  @ApiProperty()
+  name: string;
 }
 export class LoginResponse {
   @ApiProperty()
-  accessToken:string;
- 
-  @ApiProperty()
-   user: userLoginResponse;
+  accessToken: string;
 
+  @ApiProperty()
+  user: userLoginResponse;
 }
 
 export class MyResponse {
   @ApiProperty()
-  userId : string
+  userId: string;
 
   @ApiProperty()
-  name:string
+  name: string;
 
   @ApiProperty()
-  email:string
+  email: string;
 
   @ApiProperty()
-  role:string
+  role: string;
 
   @ApiProperty()
-  customePermission:customPermissionResponse
+  customePermission: customPermissionResponse;
 
   @ApiProperty()
-  leaves:LeavesDto
+  leaves: LeavesDto;
 }
 
-
 export class getEmployee {
- @ApiProperty()
- id : string;
+  @ApiProperty()
+  id: string;
 
- @ApiProperty()
- email : string;
+  @ApiProperty()
+  email: string;
 
- @ApiProperty()
- password : string;
+  @ApiProperty()
+  password: string;
 
-@ApiProperty()
-role:string;
+  @ApiProperty()
+  role: string;
 
-@ApiProperty()
- employeeId : string;
+  @ApiProperty()
+  employeeId: string;
 
-@ApiProperty()
-createdBy :string;
+  @ApiProperty()
+  createdBy: string;
 
-@ApiProperty()
-customPermission: customPermissionResponse;
+  @ApiProperty()
+  customPermission: customPermissionResponse;
 
-@ApiProperty()
- profileImage : string;
+  @ApiProperty()
+  profileImage: string;
 
-@ApiProperty()
-isDeletd: boolean;
+  @ApiProperty()
+  isDeletd: boolean;
 
-@ApiProperty()
-v : 0;
+  @ApiProperty()
+  v: 0;
 
-@ApiProperty()
-accountHolderName: string;
+  @ApiProperty()
+  accountHolderName: string;
 
-@ApiProperty()
-accountNumber: string;
+  @ApiProperty()
+  accountNumber: string;
 
-@ApiProperty()
-address: string;
-@ApiProperty()
-adharNumber: string;
-@ApiProperty()
-bankName: string;
-@ApiProperty()
-branchName: string;
-@ApiProperty()
-city: string;
-@ApiProperty()
-country: string;
-@ApiProperty()
-department: string;
-@ApiProperty()
-designation: string;
-@ApiProperty()
-dob: string;
-@ApiProperty()
-employmentType: string;
-@ApiProperty()
-firstName: string;
-@ApiProperty()
-gender: string;
-@ApiProperty()
-grade: string;
-@ApiProperty()
-ifscCode: string;
-@ApiProperty()
-institution: string;
-@ApiProperty()
-joiningDate: string;
-@ApiProperty()
-lastName: string;
-@ApiProperty()
-panNumber: string;
-@ApiProperty()
-phone: string;
-@ApiProperty()
-qualification: string;
-@ApiProperty()
-state: string;
-@ApiProperty()
-yearOfpassing: number;
-@ApiProperty()
-zipCode: string;
-
+  @ApiProperty()
+  address: string;
+  @ApiProperty()
+  adharNumber: string;
+  @ApiProperty()
+  bankName: string;
+  @ApiProperty()
+  branchName: string;
+  @ApiProperty()
+  city: string;
+  @ApiProperty()
+  country: string;
+  @ApiProperty()
+  department: string;
+  @ApiProperty()
+  designation: string;
+  @ApiProperty()
+  dob: string;
+  @ApiProperty()
+  employmentType: string;
+  @ApiProperty()
+  firstName: string;
+  @ApiProperty()
+  gender: string;
+  @ApiProperty()
+  grade: string;
+  @ApiProperty()
+  ifscCode: string;
+  @ApiProperty()
+  institution: string;
+  @ApiProperty()
+  joiningDate: string;
+  @ApiProperty()
+  lastName: string;
+  @ApiProperty()
+  panNumber: string;
+  @ApiProperty()
+  phone: string;
+  @ApiProperty()
+  qualification: string;
+  @ApiProperty()
+  state: string;
+  @ApiProperty()
+  yearOfpassing: number;
+  @ApiProperty()
+  zipCode: string;
 }
 
 export class getAllEmployeesResponse {
-
   @ApiProperty()
-  users:getEmployee
+  users: getEmployee;
 }
 
-export class userDeleteResponse{
+export class userDeleteResponse {
   @ApiProperty()
-  message:string;
+  message: string;
 }
 
-export class checkFirstUserResponse{
+export class checkFirstUserResponse {
   @ApiProperty()
-  isFirst:boolean;
+  isFirst: boolean;
 }
 
 export class FileUploadDTO {
   @ApiProperty()
-  file:any
+  file: any;
 }
 
 export class FileUploadResponse {
- @ApiProperty()
- message:string
+  @ApiProperty()
+  message: string;
 }
