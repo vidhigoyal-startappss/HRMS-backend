@@ -13,18 +13,20 @@ services:
       context: .
     environment:
       NODE_ENV: production
-      MONGO_URI: mongodb+srv://prathmeshtikle:5CzHlPWvOnMj4C4B@cluster0.fyaoha1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-      JWT_SECRET: hrms1234secret
-      JWT_RESET_SECRET: hrms1234resetsecret
-      EMAIL_USER: startappsshrms@gmail.com
-      EMAIL_PASSWORD: ljhxuvuffubocpyt
-      PORT: 3000
-      CORS_ORIGIN: http://localhost:3001
-      CLOUDINARY_CLOUD_NAME: dvz2jywhk
-      CLOUDINARY_API_KEY: 879345424947643
-      CLOUDINARY_API_SECRET: Rd-EB_7K6Vn3Oa_xn3yk-wEJKQc
+      MONGO_URI: ${MONGO_URI}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_RESET_SECRET: ${JWT_RESET_SECRET}
+      EMAIL_USER: ${EMAIL_USER}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      PORT: ${PORT}  
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+    env_file:
+      - .env 
     ports:
-      - "3000:3000"
+      - "3002:3000" 
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
