@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build && cp -r src/templates dist/templates",
+    "build": "nest build && xcopy /E /I /H /Y src\\templates dist\\templates",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node --max-old-space-size=1024 dist/main.js",
     "start:dev": "nest start --watch",
@@ -54,6 +54,7 @@
     "passport-jwt": "^4.0.1",
     "pdf-lib": "^1.17.1",
     "prom-client": "^15.1.3",
+    "puppeteer": "^24.23.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "sharp": "^0.34.3",
