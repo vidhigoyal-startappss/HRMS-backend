@@ -8,7 +8,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const port = parseInt(process.env.PORT || '3000', 10);
+  const port = parseInt(process.env.PORT || "3000", 10);
 
   const config = new DocumentBuilder()
     .setTitle("Startappss HRMS")
@@ -30,9 +30,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       "http://localhost:3001",
-      "https://hrms-frontend-oaun.onrender.com",
-      "https://hrms-frontend-5hcc.onrender.com",
-      "https://hrms-startapps-3gm5.vercel.app",
+      "https://hrms1-kappa.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -44,7 +42,7 @@ async function bootstrap() {
       transform: true,
       whitelist: true,
       forbidNonWhitelisted: true,
-    }),
+    })
   );
 
   app.use("/uploads", express.static(join(__dirname, "..", "uploads")));
