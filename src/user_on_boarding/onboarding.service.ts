@@ -26,7 +26,7 @@ export class OnboardingService {
     const form = new this.formModel({ email, token });
     await form.save();
 
-    const formLink = `http://localhost:3001/onboarding/${token}`;
+    const formLink = `https://hrms1-kappa.vercel.app/onboarding/${token}`;
 
     try {
       await this.emailService.sendOnboardingLink(email, token);
@@ -37,7 +37,7 @@ export class OnboardingService {
 
     return {
       message: "Onboarding form created",
-      formLink: `http://localhost:3001/onboarding/${token}`,
+      formLink: `https://hrms1-kappa.vercel.app/onboarding/${token}`,
       formData: form,
     };
   }

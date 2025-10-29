@@ -61,7 +61,7 @@ export class LetterController {
     }
 
     const filename = file.filename;
-    const publicUrl = `http://localhost:3001/sign-letter/${userId}/${filename}`;
+    const publicUrl = `https://hrms1-kappa.vercel.app/sign-letter/${userId}/${filename}`;
 
     await this.emailService.sendAppointmentLetter(email, publicUrl);
 
@@ -206,7 +206,7 @@ export class LetterController {
       const filePath = path.join(process.cwd(), "uploads/letters", filename);
       fs.writeFileSync(filePath, pdfBuffer);
 
-      const publicUrl = `http://localhost:3000/uploads/letters/${filename}`;
+      const publicUrl = `https://hrms-backend-2-t1l2.onrender.com/uploads/letters/${filename}`;
 
       return { link: publicUrl };
     } catch (error) {

@@ -246,7 +246,7 @@ export class AuthService {
       }
     );
 
-    const resetLink = `http://localhost:3001/reset-password?token=${token}`;
+    const resetLink = `https://hrms1-kappa.vercel.app/reset-password?token=${token}`;
     await this.emailService.sendResetLinkToEmail(email, resetLink);
 
     return { message: "Reset link sent successfully", token: token };

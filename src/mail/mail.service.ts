@@ -16,6 +16,8 @@ export class EmailService {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
       },
+        socketTimeout: 30000, // Timeout set to 30 seconds (default is usually 10 seconds)
+  connectionTimeout: 30000,
     });
   }
 
@@ -370,7 +372,7 @@ export class EmailService {
   }
 
   async sendOnboardingLink(email: string, token: string) {
-    const formLink = `http://localhost:3001/onboarding/${token}`;
+    const formLink = `https://hrms1-kappa.vercel.app/onboarding/${token}`;
 
     const mailOptions = {
       from: `"Startappss HR Team" <${process.env.EMAIL_USER}>`,

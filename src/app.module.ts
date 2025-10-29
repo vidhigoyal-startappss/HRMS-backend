@@ -14,6 +14,7 @@ import { PrometheusModule } from "./prometheus/prometheus.module";
 import { PrometheusMiddleware } from "./prometheus/prometheus.middleware";
 import { OnboardingModule } from "./user_on_boarding/onboarding.module";
 import { LetterModule } from "./letter/letter.module";
+import { EmailModule } from "./mail/mail.module";
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { LetterModule } from "./letter/letter.module";
     OnboardingModule,
     LetterModule,
     ScheduleModule.forRoot(),
+    EmailModule,
   ],
 })
 export class AppModule {
