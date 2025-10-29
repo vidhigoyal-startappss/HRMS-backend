@@ -10,3 +10,4 @@ export class EventsController {
     return this.eventsService.getTodayEventsByType(type);
   }
 }
+

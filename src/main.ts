@@ -30,7 +30,9 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       "http://localhost:3001",
-      "https://hrms1-kappa.vercel.app"
+      "hrms1-ishans-projects-807c29f7.vercel.app",
+      "hrms1-git-main-ishans-projects-807c29f7.vercel.app",
+      "hrms1-ba2qsax2z-ishans-projects-807c29f7.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -53,3 +55,6 @@ async function bootstrap() {
   console.log(`Server running on port ${port}`);
 }
 bootstrap();
+
+
+

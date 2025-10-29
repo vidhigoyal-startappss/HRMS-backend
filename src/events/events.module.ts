@@ -15,3 +15,4 @@ import { User, UserSchema } from '../auth/schemas/user.schema';
   providers: [EventsService],
 })
 export class EventsModule {}
+
