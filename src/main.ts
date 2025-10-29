@@ -30,7 +30,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       "http://localhost:3001",
-      "hrms1-ishans-projects-807c29f7.vercel.app",
+      "https://hrms1-kappa.vercel.app/",
       "hrms1-git-main-ishans-projects-807c29f7.vercel.app",
       "hrms1-ba2qsax2z-ishans-projects-807c29f7.vercel.app",
     ],
