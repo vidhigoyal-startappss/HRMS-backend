@@ -6,6 +6,10 @@ ARG NODE_VERSION=24.5.0
 # Use node image for base image for all stages.
 FROM node:${NODE_VERSION}-alpine AS base
 
+# Install Chromium (and necessary fonts for rendering PDFs/screenshots)
+RUN apk add --no-cache chromium nss freetype freetype-dev harfbuzz ca-certificates ttf-freefont
+
+
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
 
