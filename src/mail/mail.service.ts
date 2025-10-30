@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import * as nodemailer from "nodemailer";
-import { configDotenv } from "dotenv";
-
+import { config } from "dotenv";
+config();
 @Injectable()
 export class EmailService {
   private transporter;
@@ -16,8 +16,7 @@ export class EmailService {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
       },
-      socketTimeout: 30000, // Timeout set to 30 seconds (default is usually 10 seconds)
-      connectionTimeout: 30000,
+      tls: { rejectUnauthorized: false },
     });
   }
 
