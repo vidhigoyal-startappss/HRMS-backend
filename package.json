@@ -43,6 +43,7 @@
     "dotenv": "^16.5.0",
     "eslint-scope": "^5.1.1",
     "html-pdf": "^3.0.1",
+    "html-pdf-node": "^1.0.8",
     "joi": "^17.13.3",
     "json-schema-traverse": "^1.0.0",
     "mime-types": "^2.1.35",

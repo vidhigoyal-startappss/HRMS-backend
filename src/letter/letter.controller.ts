@@ -22,7 +22,8 @@ import * as puppeteer from "puppeteer";
 import { Req } from "@nestjs/common";
 import { Request } from "express";
 import { toWords } from "number-to-words";
-import { executablePath } from 'puppeteer';
+import { executablePath } from "puppeteer";
+import pdf from "html-pdf-node";
 
 @Controller("letters")
 export class LetterController {
@@ -183,30 +184,34 @@ export class LetterController {
       });
 
       // const browser = await puppeteer.launch({ headless: true });
-     const browser = await puppeteer.launch({
-  headless: true,
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
-});
+      //      const browser = await puppeteer.launch({
+      //   headless: true,
+      //   args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      // });
 
-      const page = await browser.newPage();
-      await page.setUserAgent(
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0 Safari/537.36"
-      );
-      await page.emulateMediaType("screen");
-      await page.setContent(filledHtml, { waitUntil: "networkidle0" });
+      //       const page = await browser.newPage();
+      //       await page.setUserAgent(
+      //         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0 Safari/537.36"
+      //       );
+      //       await page.emulateMediaType("screen");
+      //       await page.setContent(filledHtml, { waitUntil: "networkidle0" });
 
-      const pdfBuffer = await page.pdf({
-        format: "A4",
-        printBackground: true,
-        margin: {
-          top: "0px",
-          right: "0px",
-          bottom: "0px",
-          left: "0px",
-        },
-      });
+      //       const pdfBuffer = await page.pdf({
+      //         format: "A4",
+      //         printBackground: true,
+      //         margin: {
+      //           top: "0px",
+      //           right: "0px",
+      //           bottom: "0px",
+      //           left: "0px",
+      //         },
+      //       });
 
-      await browser.close();
+      //       await browser.close();
+      const file = { content: filledHtml };
+      const options = { format: "A4" };
+
+      const pdfBuffer = await pdf.generatePdf(file, options);
 
       const filename = `appointment-${Date.now()}.pdf`;
       const filePath = path.join(process.cwd(), "uploads/letters", filename);
