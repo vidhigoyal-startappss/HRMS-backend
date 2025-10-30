@@ -18,12 +18,13 @@ import * as path from "path";
 import * as fs from "fs";
 import { LetterService } from "./letter.service";
 import { uploadPdfToCloudinary } from "../common/utils/uploadPdfToCloudinary";
-import * as puppeteer from "puppeteer";
+// import * as puppeteer from "puppeteer";
 import { Req } from "@nestjs/common";
 import { Request } from "express";
 import { toWords } from "number-to-words";
-import { executablePath } from "puppeteer";
-import pdf from "html-pdf-node";
+// import { executablePath } from "puppeteer";
+import * as pdf from 'html-pdf-node';
+
 
 @Controller("letters")
 export class LetterController {
@@ -121,7 +122,12 @@ export class LetterController {
       }
 
       const htmlTemplate = fs.readFileSync(htmlTemplatePath, "utf8");
-      const ctcInWords = toWords(ctc).replace(/^\w/, (c) => c.toUpperCase());
+      // const ctcInWords = toWords(ctc).replace(/^\w/, (c) => c.toUpperCase());
+      const numericCtc = Number(ctc);
+if (!isFinite(numericCtc)) {
+  throw new BadRequestException("CTC must be a valid number");
+}
+const ctcInWords = toWords(numericCtc).replace(/^\w/, (c) => c.toUpperCase());
       const today = new Date();
       const formattedDate = today
         .toLocaleDateString("en-GB")
@@ -211,7 +217,7 @@ export class LetterController {
       const file = { content: filledHtml };
       const options = { format: "A4" };
 
-      const pdfBuffer = await pdf.generatePdf(file, options);
+const pdfBuffer = await pdf.generatePdf(file, options);
 
       const filename = `appointment-${Date.now()}.pdf`;
       const filePath = path.join(process.cwd(), "uploads/letters", filename);
