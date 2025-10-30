@@ -218,13 +218,17 @@ export class LetterController {
 
       const pdfBuffer = await pdf.generatePdf(file, options);
 
-      const filename = `appointment-${Date.now()}.pdf`;
-      const filePath = path.join(process.cwd(), "uploads/letters", filename);
-      fs.writeFileSync(filePath, pdfBuffer);
+      // const filename = `appointment-${Date.now()}.pdf`;
+      // const filePath = path.join(process.cwd(), "uploads/letters", filename);
+      // fs.writeFileSync(filePath, pdfBuffer);
 
-      const publicUrl = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
+      // const publicUrl = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
 
-      return { link: publicUrl };
+      // return { link: publicUrl };
+      const pdfUrl = await uploadPdfToCloudinary(pdfBuffer, "letters");
+
+// ✅ Return the Cloudinary link
+return { link: pdfUrl };
     } catch (error) {
       console.error("Error generating letter:", error);
       throw error;
