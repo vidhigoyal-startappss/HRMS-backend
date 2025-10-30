@@ -1,3 +1,8 @@
+import * as fs from 'fs';
+const puppeteerCache = process.env.PUPPETEER_CACHE_DIR || '/tmp/puppeteer';
+if (!fs.existsSync(puppeteerCache)) {
+  fs.mkdirSync(puppeteerCache, { recursive: true });
+}
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 // import { ConfigService } from '@nestjs/config';

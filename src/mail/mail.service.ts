@@ -16,8 +16,8 @@ export class EmailService {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
       },
-        socketTimeout: 30000, // Timeout set to 30 seconds (default is usually 10 seconds)
-  connectionTimeout: 30000,
+      socketTimeout: 30000, // Timeout set to 30 seconds (default is usually 10 seconds)
+      connectionTimeout: 30000,
     });
   }
 

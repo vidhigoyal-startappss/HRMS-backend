@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: hrms-backend
+    env: node
+    plan: free
+    buildCommand: "npm install && npx puppeteer browsers install chrome"
+    startCommand: "npm run start:prod"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PUPPETEER_CACHE_DIR
+        value: /tmp/puppeteer
