@@ -22,6 +22,7 @@ import * as puppeteer from "puppeteer";
 import { Req } from "@nestjs/common";
 import { Request } from "express";
 import { toWords } from "number-to-words";
+import { executablePath } from 'puppeteer';
 
 @Controller("letters")
 export class LetterController {
@@ -182,8 +183,9 @@ export class LetterController {
       });
 
       // const browser = await puppeteer.launch({ headless: true });
-      const browser = await puppeteer.launch({
-  executablePath: '/usr/bin/chromium-browser', // path in Alpine
+     
+const browser = await puppeteer.launch({
+  executablePath: executablePath(), // uses Puppeteer's downloaded Chromium
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
 });
       const page = await browser.newPage();
@@ -218,7 +220,4 @@ export class LetterController {
       throw error;
     }
   }
-}
-function replace(arg0: RegExp, formattedDate: string) {
-  throw new Error("Function not implemented.");
 }
