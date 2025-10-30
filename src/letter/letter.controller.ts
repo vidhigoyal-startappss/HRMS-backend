@@ -65,10 +65,8 @@ export class LetterController {
     if (!userId) throw new BadRequestException("User ID missing");
 
     const filename = file.filename;
-    const publicUrl = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
-
+    const publicUrl = `https://hrms1-kappa.vercel.app/sign-letter/${userId}/${filename}`;
     await this.emailService.sendAppointmentLetter(email, publicUrl);
-
     return { message: "Letter uploaded and email sent", link: publicUrl };
   }
 
