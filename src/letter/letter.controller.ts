@@ -222,7 +222,7 @@ export class LetterController {
       const filePath = path.join(process.cwd(), "uploads/letters", filename);
       fs.writeFileSync(filePath, pdfBuffer);
 
-      const publicUrl = `https://hrms-backend-2-t1l2.onrender.com/uploads/letters/${filename}`;
+      const publicUrl = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
 
       return { link: publicUrl };
     } catch (error) {
