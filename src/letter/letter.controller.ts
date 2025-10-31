@@ -227,7 +227,7 @@ export class LetterController {
       // return { link: publicUrl };
       const pdfUrl = await uploadPdfToCloudinary(pdfBuffer, "letters");
 
-// ✅ Return the Cloudinary link
+
 return { link: pdfUrl };
     } catch (error) {
       console.error("Error generating letter:", error);
