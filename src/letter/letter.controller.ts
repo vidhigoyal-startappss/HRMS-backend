@@ -119,13 +119,15 @@ export class LetterController {
 
       const htmlTemplate = fs.readFileSync(htmlTemplatePath, "utf8");
       // const ctcInWords = toWords(ctc).replace(/^\w/, (c) => c.toUpperCase());
-      const numericCtc = Number(ctc);
-      if (!isFinite(numericCtc)) {
-        throw new BadRequestException("CTC must be a valid number");
-      }
-      const ctcInWords = toWords(numericCtc).replace(/^\w/, (c) =>
-        c.toUpperCase()
-      );
+     let numericCtc = 0;
+let ctcInWords = "Zero Rupees";
+
+if (ctc && isFinite(Number(ctc))) {
+  numericCtc = Number(ctc);
+  ctcInWords = toWords(numericCtc).replace(/^\w/, (c) => c.toUpperCase()) + " Rupees";
+}
+
+     
       const today = new Date();
       const formattedDate = today
         .toLocaleDateString("en-GB")
