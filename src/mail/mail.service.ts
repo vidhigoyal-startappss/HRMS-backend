@@ -117,7 +117,7 @@ export class EmailService {
   <div class="container">
     <!-- Full-width Header with Image -->
     <header class="letter-header">
-      <img src="https://i.postimg.cc/B6gn2XcY/photo-2025-09-17-12-47-14.jpg" alt="Company Logo" class="logo">
+      <img src="https://freeimage.host/i/KL7WVDb" alt="Company Logo" class="logo">
     </header>
 
     <!-- Content Section -->
@@ -133,7 +133,7 @@ export class EmailService {
         <li style="margin-bottom: 10px;"><strong>Temporary Password:</strong> <span style="color: #333;">${password}</span></li>
         <li style="margin-bottom: 10px;">
           <strong>Portal Link:</strong> 
-          <a href="https://hrms-startapps-3gm5.vercel.app/" target="_blank" style="color: #333; text-decoration: none; font-weight: 600; transition: color 0.3s ease-in-out; border-bottom: 2px solid #2196F3;"> Click here to login </a>
+          <a href="https://hrms1-kappa.vercel.app/" target="_blank" style="color: #333; text-decoration: none; font-weight: 600; transition: color 0.3s ease-in-out; border-bottom: 2px solid #2196F3;"> Click here to login </a>
         </li>
       </ul>
 

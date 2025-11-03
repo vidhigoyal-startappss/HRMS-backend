@@ -36,7 +36,7 @@ export class LetterController {
     return dir;
   }
 
-  /** Upload and send appointment letter via email */
+  
   @Post("upload")
   @UseInterceptors(
     FileInterceptor("file", {
@@ -70,7 +70,7 @@ export class LetterController {
     return { message: "Letter uploaded and email sent", link: publicUrl };
   }
 
-  /** Upload signed letter to cloud */
+
   @Post("signed-upload")
   @UseInterceptors(FileInterceptor("file", { storage: multer.memoryStorage() }))
   async uploadSignedLetter(
@@ -85,7 +85,6 @@ export class LetterController {
     return { message: "Signed letter uploaded successfully", link: url };
   }
 
-  /** Get signed letter URL */
   @Get("signed/:userId")
   async getSignedLetter(@Param("userId") userId: string) {
     const url = await this.letterService.getSignedLetterUrl(userId);
