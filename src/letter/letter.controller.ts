@@ -23,11 +23,6 @@ import { Req } from "@nestjs/common";
 // import { Request } from 'express';
 import * as multer from "multer";
 
-
-function safe(value: any, fallback = "") {
-  return value !== undefined && value !== null ? String(value) : fallback;
-}
-
 @Controller("letters")
 export class LetterController {
   constructor(
@@ -97,256 +92,149 @@ export class LetterController {
     return { link: url };
   }
 
-//   @Post("generate")
-//   async generateLetter(@Body() body: any) {
-//     try {
-//       const {
-//         firstName,
-//         lastName,
-//         designation,
-//         joiningDate,
-//         ctc,
-//         phoneNumber,
-//         salaryDetails,
-//       } = body;
-//       const formattedJoiningDate = new Date(joiningDate).toLocaleDateString(
-//         "en-GB"
-//       );
-//       const fullName = `${firstName} ${lastName}`;
-//       const htmlTemplatePath = path.resolve(
-//         process.cwd(),
-//         "src/templates/appointmentletter.html"
-//       );
+  @Post("generate")
+  async generateLetter(@Body() body: any) {
+    try {
+      const {
+        firstName,
+        lastName,
+        designation,
+        joiningDate,
+        ctc,
+        phoneNumber,
+        salaryDetails,
+      } = body;
+      const formattedJoiningDate = new Date(joiningDate).toLocaleDateString(
+        "en-GB"
+      );
+      const fullName = `${firstName} ${lastName}`;
+      const htmlTemplatePath = path.resolve(
+        process.cwd(),
+        "src/templates/appointmentletter.html"
+      );
 
-//       if (!fs.existsSync(htmlTemplatePath)) {
-//         throw new Error(`Template file not found at ${htmlTemplatePath}`);
-//       }
+      if (!fs.existsSync(htmlTemplatePath)) {
+        throw new Error(`Template file not found at ${htmlTemplatePath}`);
+      }
 
-//       const htmlTemplate = fs.readFileSync(htmlTemplatePath, "utf8");
-//       // const ctcInWords = toWords(ctc).replace(/^\w/, (c) => c.toUpperCase());
-//     const numericCtc = Number(ctc);
-// let ctcDisplay = "0";
-// let ctcInWords = "Zero Rupees";
+      const htmlTemplate = fs.readFileSync(htmlTemplatePath, "utf8");
+      // const ctcInWords = toWords(ctc).replace(/^\w/, (c) => c.toUpperCase());
+      const numericCtc = Number(ctc);
+      if (!isFinite(numericCtc)) {
+        throw new BadRequestException("CTC must be a valid number");
+      }
+      const ctcInWords = toWords(numericCtc).replace(/^\w/, (c) =>
+        c.toUpperCase()
+      );
+      const today = new Date();
+      const formattedDate = today
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "/");
 
-// if (ctc && !isNaN(numericCtc)) {
-//   ctcDisplay = numericCtc.toString();
-//   ctcInWords = toWords(numericCtc).replace(/^\w/, (c) => c.toUpperCase()) + " Rupees";
-// }
+      let filledHtml = htmlTemplate
+        .replace(/{{fullName}}/g, fullName)
+        .replace(/{{designation}}/g, designation)
+        .replace(/{{joiningDate}}/g, formattedJoiningDate)
+        .replace(/{{ctc}}/g, ctc.toString())
+        .replace(/{{ctcInWords}}/g, `${ctcInWords} Rupees` || "Zero Rupees")
+        .replace(/{{phoneNumber}}/g, phoneNumber || "N/A")
+        .replace(/{{currentDate}}/g, formattedDate);
 
-//       const today = new Date();
-//       const formattedDate = today
-//         .toLocaleDateString("en-GB")
-//         .replace(/\//g, "/");
+      const fields: { name: keyof typeof salaryDetails; label: string }[] = [
+        { name: "basicFixedMonthly", label: "Basic Fixed Monthly" },
+        { name: "basicFixedYearly", label: "Basic Fixed Yearly" },
+        { name: "hraFixedMonthly", label: "HRA Fixed Monthly" },
+        { name: "hraFixedYearly", label: "HRA Fixed Yearly" },
+        { name: "conveyanceMonthly", label: "Conveyance Monthly" },
+        { name: "conveyanceYearly", label: "Conveyance Yearly" },
+        {
+          name: "dearnessAllowancesMonthly",
+          label: "Dearness Allowance Monthly",
+        },
+        {
+          name: "dearnessAllowancesYearly",
+          label: "Dearness Allowance Yearly",
+        },
+        { name: "otherAllowancesMonthly", label: "Other Allowances Monthly" },
+        { name: "otherAllowancesYearly", label: "Other Allowances Yearly" },
+        {
+          name: "annualGrossSalaryMonthly",
+          label: "Annual Gross Salary Monthly",
+        },
+        {
+          name: "annualGrossSalaryYearly",
+          label: "Annual Gross Salary Yearly",
+        },
+        { name: "employerPFMonthly", label: "Employer PF Monthly" },
+        { name: "employerPFYearly", label: "Employer PF Yearly" },
+        { name: "totalFixedPayMonthly", label: "Total Fixed Pay Monthly" },
+        { name: "totalFixedPayYearly", label: "Total Fixed Pay Yearly" },
+        {
+          name: "individualVariablePayMonthly",
+          label: "Individual Variable Pay Monthly",
+        },
+        {
+          name: "individualVariablePayYearly",
+          label: "Individual Variable Pay Yearly",
+        },
+        { name: "totalCTCMonthly", label: "Total CTC Monthly" },
+        { name: "totalCTCYearly", label: "Total CTC Yearly" },
+      ];
 
-//       let filledHtml = htmlTemplate
-//         .replace(/{{fullName}}/g, fullName)
-//         .replace(/{{designation}}/g, designation)
-//         .replace(/{{joiningDate}}/g, formattedJoiningDate)
-//         .replace(/{{ctc}}/g, ctcDisplay)
-//         .replace(/{{ctcInWords}}/g, `${ctcInWords} Rupees` || "Zero Rupees")
-//         .replace(/{{phoneNumber}}/g, phoneNumber || "N/A")
-//         .replace(/{{currentDate}}/g, formattedDate);
-
-//       const fields: { name: keyof typeof salaryDetails; label: string }[] = [
-//         { name: "basicFixedMonthly", label: "Basic Fixed Monthly" },
-//         { name: "basicFixedYearly", label: "Basic Fixed Yearly" },
-//         { name: "hraFixedMonthly", label: "HRA Fixed Monthly" },
-//         { name: "hraFixedYearly", label: "HRA Fixed Yearly" },
-//         { name: "conveyanceMonthly", label: "Conveyance Monthly" },
-//         { name: "conveyanceYearly", label: "Conveyance Yearly" },
-//         {
-//           name: "dearnessAllowancesMonthly",
-//           label: "Dearness Allowance Monthly",
-//         },
-//         {
-//           name: "dearnessAllowancesYearly",
-//           label: "Dearness Allowance Yearly",
-//         },
-//         { name: "otherAllowancesMonthly", label: "Other Allowances Monthly" },
-//         { name: "otherAllowancesYearly", label: "Other Allowances Yearly" },
-//         {
-//           name: "annualGrossSalaryMonthly",
-//           label: "Annual Gross Salary Monthly",
-//         },
-//         {
-//           name: "annualGrossSalaryYearly",
-//           label: "Annual Gross Salary Yearly",
-//         },
-//         { name: "employerPFMonthly", label: "Employer PF Monthly" },
-//         { name: "employerPFYearly", label: "Employer PF Yearly" },
-//         { name: "totalFixedPayMonthly", label: "Total Fixed Pay Monthly" },
-//         { name: "totalFixedPayYearly", label: "Total Fixed Pay Yearly" },
-//         {
-//           name: "individualVariablePayMonthly",
-//           label: "Individual Variable Pay Monthly",
-//         },
-//         {
-//           name: "individualVariablePayYearly",
-//           label: "Individual Variable Pay Yearly",
-//         },
-//         { name: "totalCTCMonthly", label: "Total CTC Monthly" },
-//         { name: "totalCTCYearly", label: "Total CTC Yearly" },
-//       ];
-
-//       fields.forEach((field) => {
-//         const placeholder = `{{${String(field.name)}}}`;
-//         const value = salaryDetails[field.name] || "0,00,000.00";
-//         filledHtml = filledHtml.replace(new RegExp(placeholder, "g"), value);
-//       });
-
-//       // const browser = await puppeteer.launch({ headless: true });
-//       //      const browser = await puppeteer.launch({
-//       //   headless: true,
-//       //   args: ['--no-sandbox', '--disable-setuid-sandbox'],
-//       // });
-
-//       //       const page = await browser.newPage();
-//       //       await page.setUserAgent(
-//       //         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0 Safari/537.36"
-//       //       );
-//       //       await page.emulateMediaType("screen");
-//       //       await page.setContent(filledHtml, { waitUntil: "networkidle0" });
-
-//       //       const pdfBuffer = await page.pdf({
-//       //         format: "A4",
-//       //         printBackground: true,
-//       //         margin: {
-//       //           top: "0px",
-//       //           right: "0px",
-//       //           bottom: "0px",
-//       //           left: "0px",
-//       //         },
-//       //       });
-
-//       //       await browser.close();
-//       const file = { content: filledHtml };
-//       const options = { format: "A4" };
-
-//       const pdfBuffer = await pdf.generatePdf(file, options);
-
-//       // const filename = `appointment-${Date.now()}.pdf`;
-//       // const filePath = path.join(process.cwd(), "uploads/letters", filename);
-//       // fs.writeFileSync(filePath, pdfBuffer);
-
-//       // const publicUrl = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
-
-//       // return { link: publicUrl };
-//       const pdfUrl = await uploadPdfToCloudinary(pdfBuffer, "letters");
-
-
-// return { link: pdfUrl };
-//     } catch (error) {
-//       console.error("Error generating letter:", error);
-//       throw error;
-//     }
-//   }
-// }
-@Post("generate")
-async generateLetter(@Body() body: any) {
-  try {
-    const {
-      firstName,
-      lastName,
-      designation,
-      joiningDate,
-      ctc,
-      phoneNumber,
-      salaryDetails,
-    } = body;
-
-    // ---- SAFETY CHECKS ----
-    const fullName = `${firstName || ""} ${lastName || ""}`.trim();
-    const formattedJoiningDate = joiningDate
-      ? new Date(joiningDate).toLocaleDateString("en-GB")
-      : "N/A";
-
-    const htmlTemplatePath = path.resolve(
-      process.cwd(),
-      "src/templates/appointmentletter.html"
-    );
-
-    if (!fs.existsSync(htmlTemplatePath)) {
-      throw new Error(`Template file not found at ${htmlTemplatePath}`);
-    }
-
-    const htmlTemplate = fs.readFileSync(htmlTemplatePath, "utf8");
-
-    // ---- SAFELY HANDLE CTC ----
-    const numericCtc = Number(ctc);
-    let ctcDisplay = "0";
-    let ctcInWords = "Zero Rupees";
-
-    if (ctc && !isNaN(numericCtc)) {
-      ctcDisplay = numericCtc.toString();
-      ctcInWords =
-        toWords(numericCtc).replace(/^\w/, (c) => c.toUpperCase()) + " Rupees";
-    }
-
-    // ---- DATE ----
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString("en-GB").replace(/\//g, "/");
-
-    // ---- REPLACE BASIC FIELDS ----
-    let filledHtml = htmlTemplate
-      .replace(/{{fullName}}/g, fullName)
-      .replace(/{{designation}}/g, designation || "")
-      .replace(/{{joiningDate}}/g, formattedJoiningDate)
-      .replace(/{{ctc}}/g, ctcDisplay)
-      .replace(/{{ctcInWords}}/g, ctcInWords)
-      .replace(/{{phoneNumber}}/g, phoneNumber || "N/A")
-      .replace(/{{currentDate}}/g, formattedDate);
-
-    // ---- SALARY DETAILS (safe handling) ----
-    const fields: { name: keyof typeof salaryDetails; label: string }[] = [
-      { name: "basicFixedMonthly", label: "Basic Fixed Monthly" },
-      { name: "basicFixedYearly", label: "Basic Fixed Yearly" },
-      { name: "hraFixedMonthly", label: "HRA Fixed Monthly" },
-      { name: "hraFixedYearly", label: "HRA Fixed Yearly" },
-      { name: "conveyanceMonthly", label: "Conveyance Monthly" },
-      { name: "conveyanceYearly", label: "Conveyance Yearly" },
-      { name: "dearnessAllowancesMonthly", label: "Dearness Allowance Monthly" },
-      { name: "dearnessAllowancesYearly", label: "Dearness Allowance Yearly" },
-      { name: "otherAllowancesMonthly", label: "Other Allowances Monthly" },
-      { name: "otherAllowancesYearly", label: "Other Allowances Yearly" },
-      { name: "annualGrossSalaryMonthly", label: "Annual Gross Salary Monthly" },
-      { name: "annualGrossSalaryYearly", label: "Annual Gross Salary Yearly" },
-      { name: "employerPFMonthly", label: "Employer PF Monthly" },
-      { name: "employerPFYearly", label: "Employer PF Yearly" },
-      { name: "totalFixedPayMonthly", label: "Total Fixed Pay Monthly" },
-      { name: "totalFixedPayYearly", label: "Total Fixed Pay Yearly" },
-      { name: "individualVariablePayMonthly", label: "Individual Variable Pay Monthly" },
-      { name: "individualVariablePayYearly", label: "Individual Variable Pay Yearly" },
-      { name: "totalCTCMonthly", label: "Total CTC Monthly" },
-      { name: "totalCTCYearly", label: "Total CTC Yearly" },
-    ];
-
-    if (salaryDetails) {
       fields.forEach((field) => {
         const placeholder = `{{${String(field.name)}}}`;
-        const value =
-          salaryDetails[field.name] !== undefined
-            ? salaryDetails[field.name]
-            : "0,00,000.00";
+        const value = salaryDetails[field.name] || "0,00,000.00";
         filledHtml = filledHtml.replace(new RegExp(placeholder, "g"), value);
       });
+
+      // const browser = await puppeteer.launch({ headless: true });
+      //      const browser = await puppeteer.launch({
+      //   headless: true,
+      //   args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      // });
+
+      //       const page = await browser.newPage();
+      //       await page.setUserAgent(
+      //         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0 Safari/537.36"
+      //       );
+      //       await page.emulateMediaType("screen");
+      //       await page.setContent(filledHtml, { waitUntil: "networkidle0" });
+
+      //       const pdfBuffer = await page.pdf({
+      //         format: "A4",
+      //         printBackground: true,
+      //         margin: {
+      //           top: "0px",
+      //           right: "0px",
+      //           bottom: "0px",
+      //           left: "0px",
+      //         },
+      //       });
+
+      //       await browser.close();
+      const file = { content: filledHtml };
+      const options = { format: "A4" };
+
+      const pdfBuffer = await pdf.generatePdf(file, options);
+
+      // const filename = `appointment-${Date.now()}.pdf`;
+      // const filePath = path.join(process.cwd(), "uploads/letters", filename);
+      // fs.writeFileSync(filePath, pdfBuffer);
+
+      // const publicUrl = `https://hrms1-kappa.vercel.app/uploads/letters/${filename}`;
+
+      // return { link: publicUrl };
+      const pdfUrl = await uploadPdfToCloudinary(pdfBuffer, "letters");
+
+
+return { link: pdfUrl };
+    } catch (error) {
+      console.error("Error generating letter:", error);
+      throw error;
     }
-
-    // ---- PDF GENERATION ----
-    const file = { content: filledHtml };
-    const options = { format: "A4" };
-
-    const pdfBuffer = await pdf.generatePdf(file, options);
-
-    // ---- CLOUDINARY UPLOAD ----
-    const pdfUrl = await uploadPdfToCloudinary(pdfBuffer, "letters");
-
-    return { link: pdfUrl };
-  } catch (error) {
-    console.error("Error generating letter:", error);
-    throw error;
   }
 }
-}
+
 // import {
 //   Controller,
 //   Post,
