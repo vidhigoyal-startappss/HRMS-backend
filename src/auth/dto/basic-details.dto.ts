@@ -98,11 +98,6 @@ export class BasicDetailsDto {
   @IsOptional()
   employmentType?: string;
 
-  // @IsDefined()
-  // @ValidateNested()
-  // @Type(() => LeavesDto)
-  // // leaves: LeavesDto;
-
   @IsString()
   @ApiProperty()
   @IsNotEmpty()

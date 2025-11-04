@@ -33,10 +33,6 @@ export class RegisterDto {
   })
   role: string;
 
-  // @IsOptional()
-  // @IsString()
-  // name?: string;
-
   @IsOptional()
   @IsObject({ message: "Custom permissions must be an object" })
   customPermissions?: Record<string, string[]>;

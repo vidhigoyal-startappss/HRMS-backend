@@ -46,7 +46,6 @@ export class LeaveController {
     return this.leaveService.applyLeave(req.user, body);
   }
 
-  // employee will get all his leaves
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles("HR", "Admin", "SuperAdmin", "Employee")
   @ApiOkResponse({ type: LeaveResponse })
@@ -54,8 +53,6 @@ export class LeaveController {
   async getLeaves(@Req() req: any) {
     return this.leaveService.fetchLeaves(req.user);
   }
-
-  // Hr will get all employees leave
 
   @ApiOkResponse({ type: LeaveResponse })
   @Get()
@@ -75,10 +72,6 @@ export class LeaveController {
     return this.leaveService.updateLeaveStatus(req.user, id, status);
   }
 
-
-
-
-  
   @ApiParam({ name: "id" })
   @ApiOkResponse({ description: "Leave deleted successfully" })
   @UseGuards(JwtAuthGuard, RolesGuard)

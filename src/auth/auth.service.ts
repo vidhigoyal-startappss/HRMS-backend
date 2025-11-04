@@ -15,14 +15,12 @@ import { LoginDto } from "./dto/login.dto";
 import { UpdateCompleteProfileDto } from "./dto/update-complete-profile.dto";
 import { PERMISSIONS } from "./constants/permissions.constant";
 import { EmailService } from "src/mail/mail.service";
-// import { DeleteRequest, DeleteRequestDocument } from './schemas/delete-request.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Sequence.name) private sequenceModal: Model<Sequence>,
-    // @InjectModel(DeleteRequest.name) private deleteRequestModel: Model<DeleteRequestDocument>,
     private jwtService: JwtService,
     private emailService: EmailService
   ) {}
@@ -69,7 +67,6 @@ export class AuthService {
       customPermissions = PERMISSIONS[role] || {};
     }
 
-    // const employeeId = `EMP${Date.now()}${Math.floor(Math.random() * 10000)}`;
     const employeeId = await this.genrateEmployeeid();
     const createdUser = new this.userModel({
       email: registerDto.email,
@@ -81,11 +78,10 @@ export class AuthService {
     });
 
     const savedUser = await createdUser.save();
-    // const userName = registerDto.name || savedUser.email;
+
     console.log("Sending email for new user: ", registerDto.email);
 
     await this.emailService.sendUserCredentials(
-      // registerDto.name ?? savedUser.email,
       registerDto.email,
       registerDto.password
     );
@@ -144,7 +140,7 @@ export class AuthService {
   }
 
   async updateCompleteProfile(userId: string, dto: UpdateCompleteProfileDto) {
-    const { basicDetails, educationDetails, bankDetails , salaryDetails  } = dto;
+    const { basicDetails, educationDetails, bankDetails, salaryDetails } = dto;
 
     let paidLeaveAllowed = 0;
     let wfhAllowed = 0;
@@ -163,7 +159,7 @@ export class AuthService {
       ...basicDetails,
       ...educationDetails,
       ...bankDetails,
-          salaryDetails, 
+      salaryDetails,
       paidLeaveAllowed,
       wfhAllowed,
     };
@@ -183,7 +179,7 @@ export class AuthService {
 
   async findEmployeesOnly(userRole: string, showDeleted = false) {
     const baseQuery: any = {
-      isDeleted: showDeleted ? true : { $ne: true }, // either get deleted users or active ones
+      isDeleted: showDeleted ? true : { $ne: true },
     };
 
     if (userRole === "SuperAdmin") {
@@ -317,25 +313,4 @@ export class AuthService {
     await user.save();
     return { message: "User soft deleted successfully" };
   }
-
-  // async requestDelete(userId: string, requestedById: string) {
-  //   const existing = await this.deleteRequestModel.findOne({
-  //     userId,
-  //     requestedBy: requestedById,
-  //     status: 'pending',
-  //   });
-
-  //   if (existing) {
-  //     throw new BadRequestException('Delete request already pending');
-  //   }
-
-  //   const newRequest = new this.deleteRequestModel({
-  //     userId,
-  //     requestedBy: requestedById,
-  //     status: 'pending',
-  //   });
-
-  //   await newRequest.save();
-  //   return { message: 'Delete request submitted for approval' };
-  // }
 }
