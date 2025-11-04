@@ -44,10 +44,9 @@ export class LeaveService {
     return count;
   }
 
-   async findLeaveById(id: string) {
+  async findLeaveById(id: string) {
     return this.leaveModel.findById(id).exec();
   }
-
 
   async applyLeave(
     user: {
@@ -123,7 +122,7 @@ export class LeaveService {
       .sort({ createdAt: -1 })
       .exec();
   }
-z
+  z;
   async updateLeaveStatus(
     user: { userId: string; customPermissions: Record<string, string[]> },
     id: string,
@@ -145,6 +144,18 @@ z
     const leave = await this.leaveModel.findById(id);
     if (!leave) {
       throw new NotFoundException("Leave request not found");
+    }
+
+    const currentUser = await this.userModel.findById(user.userId);
+
+    if (
+      currentUser &&
+      currentUser.role === "HR" &&
+      leave.userId.toString() === user.userId.toString()
+    ) {
+      throw new ForbiddenException(
+        "HR cannot approve or update their own leave request."
+      );
     }
 
     let noOfDays = leave?.noOfDays;
@@ -241,9 +252,14 @@ z
       this.logger.error("Monthly Leave Credit Cron Failed", error);
     }
   }
-    async deleteLeave(user: { userId: string; customPermissions: Record<string, string[]> }, id: string) {
+  async deleteLeave(
+    user: { userId: string; customPermissions: Record<string, string[]> },
+    id: string
+  ) {
     if (!user.customPermissions["leaves"]?.includes("delete")) {
-      throw new ForbiddenException("You do not have permission to delete leave");
+      throw new ForbiddenException(
+        "You do not have permission to delete leave"
+      );
     }
 
     const leave = await this.findLeaveById(id);
@@ -252,7 +268,9 @@ z
     }
 
     if (leave.status !== "Pending") {
-      throw new BadRequestException("You can only delete pending leave requests.");
+      throw new BadRequestException(
+        "You can only delete pending leave requests."
+      );
     }
 
     await this.leaveModel.deleteOne({ _id: id });
