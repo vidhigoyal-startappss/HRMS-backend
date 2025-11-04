@@ -252,6 +252,7 @@ export class LeaveService {
       this.logger.error("Monthly Leave Credit Cron Failed", error);
     }
   }
+  
   async deleteLeave(
     user: { userId: string; customPermissions: Record<string, string[]> },
     id: string
@@ -293,5 +294,6 @@ export class LeaveService {
     );
 
     return { message: "Leave successfully deleted" };
+  
   }
 }

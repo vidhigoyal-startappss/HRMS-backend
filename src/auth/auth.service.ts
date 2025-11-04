@@ -292,6 +292,13 @@ export class AuthService {
         }
       }
 
+      const isSamePassword = await bcrypt.compare(newPassword, user.password);
+      if (isSamePassword) {
+        throw new BadRequestException(
+          "New password cannot be the same as the old password"
+        );
+      }
+
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       await this.userModel.findByIdAndUpdate(payload.userId, {
         password: hashedPassword,

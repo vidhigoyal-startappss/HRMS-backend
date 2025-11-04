@@ -115,10 +115,11 @@ export class LetterController {
       }
 
       const htmlTemplate = fs.readFileSync(htmlTemplatePath, "utf8");
-      const numericCtc = Number(ctc);
-      if (!isFinite(numericCtc)) {
-        throw new BadRequestException("CTC must be a valid number");
-      }
+    const numericCtc = Number(ctc?.toString().replace(/,/g, ""));
+if (!isFinite(numericCtc)) {
+  throw new BadRequestException("CTC must be a valid number");
+}
+
       const ctcInWords = toWords(numericCtc).replace(/^\w/, (c) =>
         c.toUpperCase()
       );
