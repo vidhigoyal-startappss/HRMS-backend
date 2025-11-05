@@ -117,7 +117,7 @@ export class EmailService {
   <div class="container">
     <!-- Full-width Header with Image -->
     <header class="letter-header">
-      <img src="https://freeimage.host/i/KL7WVDb" alt="Company Logo" class="logo">
+      <img src="https://i.postimg.cc/9MKxRL4k/photo-2025-09-17-12-47-14.jpg" alt="Company Logo" class="logo">
     </header>
 
     <!-- Content Section -->
@@ -291,7 +291,7 @@ export class EmailService {
   <div class="container">
     <!-- Header Image -->
     <header class="letter-header">
-      <img src="https://i.postimg.cc/B6gn2XcY/photo-2025-09-17-12-47-14.jpg" alt="Company Logo" class="logo">
+      <img src="https://i.postimg.cc/9MKxRL4k/photo-2025-09-17-12-47-14.jpg" alt="Company Logo" class="logo">
     </header>
 
     <!-- Content Section -->
@@ -651,7 +651,7 @@ export class EmailService {
 
     <!-- Header -->
     <div class="header">
-      <img src="https://i.postimg.cc/B6gn2XcY/photo-2025-09-17-12-47-14.jpg" alt="Startappss Logo">
+      <img src="https://i.postimg.cc/9MKxRL4k/photo-2025-09-17-12-47-14.jpg" alt="Startappss Logo">
     </div>
 
     <!-- Main Content -->
