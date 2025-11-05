@@ -408,7 +408,7 @@ export class EmailService {
       color: #333;
     }
     .container {
-      max-width: 1200px;
+      max-width: 1000px;
       margin: 30px auto;
       background: #ffffff;
       border-radius: 12px;
