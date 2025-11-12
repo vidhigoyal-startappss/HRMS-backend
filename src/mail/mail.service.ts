@@ -117,7 +117,7 @@ export class EmailService {
   <div class="container">
     <!-- Full-width Header with Image -->
     <header class="letter-header">
-      <img src="https://www.canva.com/design/DAG31PBEQoA/XcV0V4bst2vvpIDNH2pv-A/view?utm_content=DAG31PBEQoA&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h12c8e80bb1" alt="Company Logo" class="logo">
+      <img src="https://i.postimg.cc/9MKxRL4k/photo-2025-09-17-12-47-14.jpg" alt="Company Logo" class="logo">
     </header>
 
     <!-- Content Section -->
@@ -291,7 +291,7 @@ export class EmailService {
   <div class="container">
     <!-- Header Image -->
     <header class="letter-header">
-      <img src="https://www.canva.com/design/DAG31PBEQoA/XcV0V4bst2vvpIDNH2pv-A/view?utm_content=DAG31PBEQoA&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h12c8e80bb1" alt="Company Logo" class="logo">
+      <img src="https://i.postimg.cc/9MKxRL4k/photo-2025-09-17-12-47-14.jpg" alt="Company Logo" class="logo">
     </header>
 
     <!-- Content Section -->
@@ -376,7 +376,7 @@ export class EmailService {
 
     const msg: any = {
       to: email,
-      from: process.env.EMAIL_FROM, // Verified sender
+      from: process.env.EMAIL_FROM, 
       subject: "HRMS – Password Reset Instructions",
       html,
     };
@@ -466,7 +466,7 @@ export class EmailService {
   <div class="container">
     <!-- Header -->
     <div class="header">
-        <img src="https://www.canva.com/design/DAG31PBEQoA/XcV0V4bst2vvpIDNH2pv-A/view?utm_content=DAG31PBEQoA&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h12c8e80bb1" alt="header-banner" class="header-banner">
+        <img src="https://i.postimg.cc/9MKxRL4k/photo-2025-09-17-12-47-14.jpg" alt="header-banner" class="header-banner">
        
     </div>
 
@@ -651,7 +651,7 @@ export class EmailService {
 
     <!-- Header -->
     <div class="header">
-      <img src="https://www.canva.com/design/DAG31PBEQoA/XcV0V4bst2vvpIDNH2pv-A/view?utm_content=DAG31PBEQoA&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h12c8e80bb1" alt="Startappss Logo">
+      <img src="https://i.postimg.cc/9MKxRL4k/photo-2025-09-17-12-47-14.jpg" alt="Startappss Logo">
     </div>
 
     <!-- Main Content -->
